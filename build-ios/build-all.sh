@@ -171,7 +171,7 @@ do
 	mkdir -p $TMPDIR/build/ios/${PLATFORM}-${SDK}/obj
 done
 
-find $TMPDIR/build -name "*.a" -exec basename {} \; > $BINDIR/libs
+find $TMPDIR/build/ios -name "*.a" -exec basename {} \; > $BINDIR/libs
 for a in $(cat $BINDIR/libs | sort | uniq); do
 
 	echo Decomposing $a...
@@ -190,6 +190,7 @@ for a in $(cat $BINDIR/libs | sort | uniq); do
 	$DEVROOT/usr/bin/lipo -output "$BINDIR/lib/$a" -create -arch armv6 "$TMPDIR/build/ios/iPhoneOS-V6-$SDK/lib/$a" -arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7-$SDK/lib/$a" -arch i386 "$TMPDIR/build/ios/iPhoneSimulator-$SDK/lib/$a"
 
 done
+rm -f $BINDIR/libs
 
 echo "Linking each architecture into an archive ${FRAMEWORK_NAME}.a for each platform to be built into the framework"
 
