@@ -21,10 +21,14 @@ To run iOS build:
 cd [cmoss root path]/build-ios
 ./build-all.sh [installed sdk version #] [proxy_host:proxy_port]
 
+(scripts were tested with SDK 4.3)
+
 To run Android build:
 
 cd [cmoss root path]/build-ios
 ./build-all.sh [path to Android NDK] [proxy_host:proxy_port]
+
+(scripts were tested with Android NDK r7)
 
 These build scripts were tested on a Mac OS X 10 with the following Mac ports:
 
