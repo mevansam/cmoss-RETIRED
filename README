@@ -1,0 +1,28 @@
+To run iOS build:
+
+cd [cmoss root path]/build-ios
+./build-all.sh [installed sdk version #] [proxy_host:proxy_port]
+
+To run Android build:
+
+cd [cmoss root path]/build-ios
+./build-all.sh [path to Android NDK] [proxy_host:proxy_port]
+
+These build scripts were tested on a Mac OS X 10 with the following Mac ports:
+
+  cmake @2.8.4_0 (active)
+  cppunit @1.12.1_0 (active)
+  dos2unix @5.1.1_0 (active)
+  expat @2.0.1_1 (active)
+  gettext @0.18.1.1_2 (active)
+  gperf @3.0.4_0 (active)
+  libiconv @1.13.1_0 (active)
+  libidn @1.20_0 (active)
+  ncurses @5.8_0
+  ncurses @5.8_1 (active)
+  ncursesw @5.8_0 (active)
+  openssl @1.0.0d_0 (active)
+  wget @1.12_3+ssl (active)
+  zlib @1.2.5_0 (active)
+
+The Android scripts should work in a Linux environment but have not been tested.
