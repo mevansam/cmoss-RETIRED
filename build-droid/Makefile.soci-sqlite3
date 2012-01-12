@@ -1,0 +1,62 @@
+# The following variable is specific to this backend and its correct
+# values might depend on your environment - feel free to set it accordingly.
+
+SQLITE3INCLUDEDIR =
+
+# The rest of the Makefile is indepentent of the target environment.
+
+INCLUDEDIRS = -I../../core ${SQLITE3INCLUDEDIR}
+
+OBJECTS = blob.o factory.o row-id.o session.o standard-into-type.o \
+	standard-use-type.o statement.o vector-into-type.o vector-use-type.o \
+	common.o
+
+libsoci_sqlite3.so : ${OBJECTS}
+	${CC} ${LDFLAGS} -o $@ $?
+
+libsoci_sqlite3.a : ${OBJECTS}
+	${AR} rv $@ $?
+	${RANLIB} $@
+
+blob.o : blob.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+common.o : common.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+factory.o : factory.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+row-id.o : row-id.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+session.o : session.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+standard-into-type.o : standard-into-type.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+standard-use-type.o : standard-use-type.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+statement.o : statement.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+vector-into-type.o : vector-into-type.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+vector-use-type.o : vector-use-type.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+install : libsoci_sqlite3.a libsoci_sqlite3.so
+	if ( test ! -d ${PREFIX}/lib ) ; then mkdir -p ${PREFIX}/lib ; fi
+	if ( test ! -d ${PREFIX}/include/soci ) ; then mkdir -p ${PREFIX}/include/soci ; fi
+	mv -f libsoci_sqlite3.a ${PREFIX}/lib
+	mv -f libsoci_sqlite3.so ${PREFIX}/lib
+	cp -f *.h ${PREFIX}/include/soci
+	rm *.o
+
+clean :
+	rm *.o
+	rm -f libsoci_sqlite3.a
+	rm -f libsoci_sqlite3.so

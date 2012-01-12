@@ -1,0 +1,83 @@
+INCLUDEDIRS =
+
+BACKENDLOADERDEFS = -DSOCI_LIB_PREFIX=\"libsoci_\" -DSOCI_LIB_SUFFIX=\".so\"
+
+OBJS =  session.o statement.o row.o values.o \
+	into-type.o use-type.o \
+	blob.o rowid.o procedure.o ref-counted-prepare-info.o ref-counted-statement.o \
+	once-temp-type.o prepare-temp-type.o error.o transaction.o backend-loader.o \
+	connection-pool.o soci-simple.o
+
+libsoci_core.so : ${OBJS}
+	${CC} ${LDFLAGS} -o $@ $?
+
+libsoci_core.a : ${OBJS}
+	${AR} rv $@ $?
+	${RANLIB} $@
+
+session.o : session.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+statement.o : statement.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+row.o : row.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+values.o : values.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+into-type.o : into-type.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+use-type.o : use-type.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+blob.o : blob.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+error.o : error.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+rowid.o : rowid.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+procedure.o : procedure.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+ref-counted-prepare-info.o : ref-counted-prepare-info.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+ref-counted-statement.o : ref-counted-statement.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+once-temp-type.o : once-temp-type.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+prepare-temp-type.o : prepare-temp-type.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+transaction.o : transaction.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+backend-loader.o : backend-loader.cpp
+	${CXX} -c $? ${CXXFLAGS} ${BACKENDLOADERDEFS} ${INCLUDEDIRS}
+
+connection-pool.o : connection-pool.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+soci-simple.o : soci-simple.cpp
+	${CXX} -c $? ${CXXFLAGS} ${INCLUDEDIRS}
+
+install : libsoci_core.a libsoci_core.so
+	if ( test ! -d ${PREFIX}/lib ) ; then mkdir -p ${PREFIX}/lib ; fi
+	if ( test ! -d ${PREFIX}/include/soci ) ; then mkdir -p ${PREFIX}/include/soci ; fi
+	mv -f libsoci_core.a ${PREFIX}/lib
+	mv -f libsoci_core.so ${PREFIX}/lib
+	cp -f *.h ${PREFIX}/include/soci
+	rm *.o
+
+clean :
+	rm *.o
+	rm -f libsoci_core.a
+	rm -f libsoci_core.so
