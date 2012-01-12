@@ -142,6 +142,7 @@ do
 	rm -rf "${ROOTDIR}/sbin"
 	rm -rf "${ROOTDIR}/share"
 	rm -rf "${ROOTDIR}/openssl.cnf"
+	rm -rf "${ROOTDIR}/obj"
 
 done
 
@@ -261,8 +262,6 @@ cat > $FRAMEWORK_BUNDLE/Resources/Info.plist <<EOF
 </dict>
 </plist>
 EOF
-
-rm -rf $TMPDIR/build
 
 echo "**** iOS ${FRAMEWORK_NAME} Framework build completed ****"
 
