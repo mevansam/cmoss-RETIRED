@@ -170,13 +170,13 @@ done
 mkdir -p ${BINDIR}/include
 cp -r ${TMPDIR}/build/droid/arm-linux-androideabi/include/ ${BINDIR}/include
 
-mkdir -p ${BINDIR}/lib/emulator
-mkdir -p ${BINDIR}/lib/device
+mkdir -p ${BINDIR}/lib/armv7
+mkdir -p ${BINDIR}/lib/x86
 
-cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/emulator
-cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.so ${BINDIR}/lib/emulator
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.a ${BINDIR}/lib/device
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.so ${BINDIR}/lib/device
+cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/x86
+cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.so ${BINDIR}/lib/x86
+cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.a ${BINDIR}/lib/armv7
+cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.so ${BINDIR}/lib/armv7
 
 echo "**** Android c/c++ open source build completed ****"
 
