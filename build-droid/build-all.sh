@@ -18,6 +18,9 @@ else
 	export PROXY="-x $2"
 fi
 
+# Project version to use to build zlib (changing this may break the build)
+export ZLIB_VERSION="1.2.6"
+
 # Project version to use to build c-ares (changing this may break the build)
 export CARES_VERSION="1.7.5"
 
@@ -71,7 +74,8 @@ ANDROID_API_LEVEL="14"
 TOOLCHAIN_VERSION="4.4.3"
 
 # Platforms to build for (changing this may break the build)
-PLATFORMS="i686-android-linux arm-linux-androideabi"
+#PLATFORMS="i686-android-linux arm-linux-androideabi"
+PLATFORMS="arm-linux-androideabi"
 
 # Create tool chains for each supported platform
 for PLATFORM in ${PLATFORMS}
@@ -114,6 +118,9 @@ do
 	export PLATFORM=${PLATFORM}
 	export DROIDTOOLS=${TMPDIR}/droidtoolchains/${PLATFORM}/bin/${PLATFORM}
 	export SYSROOT=${TMPDIR}/droidtoolchains/${PLATFORM}/sysroot
+
+	# Build c-ares
+	${TOPDIR}/build-droid/build-zlib.sh > "${LOGPATH}-zlib.log"
 
 	# Build c-ares
 	${TOPDIR}/build-droid/build-cares.sh > "${LOGPATH}-cares.log"
@@ -170,13 +177,18 @@ done
 mkdir -p ${BINDIR}/include
 cp -r ${TMPDIR}/build/droid/arm-linux-androideabi/include/ ${BINDIR}/include
 
+#mkdir -p ${BINDIR}/lib/x86
 mkdir -p ${BINDIR}/lib/armv7
-mkdir -p ${BINDIR}/lib/x86
 
-cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/x86
-cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.so ${BINDIR}/lib/x86
+#cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/x86
+
+#(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
+#(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
+
 cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.a ${BINDIR}/lib/armv7
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.so ${BINDIR}/lib/armv7
+
+(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/armv7 && tar xfB - )
+(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/armv7 && tar xfB - )
 
 echo "**** Android c/c++ open source build completed ****"
 

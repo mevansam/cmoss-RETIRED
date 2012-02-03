@@ -54,6 +54,10 @@ export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
 ./Configure shared no-asm no-krb5 no-gost zlib-dynamic --openssldir=${ROOTDIR} linux-generic32
 
+mv "Makefile" "Makefile~"
+sed "s/\.so\.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)/\.so/" Makefile~ > Makefile~1
+sed "s/\$(SHLIB_MAJOR).\$(SHLIB_MINOR)//" Makefile~1 > Makefile
+
 make CC="${CC}" CFLAG="${CFLAGS}" SHARED_LDFLAGS="${LDFLAGS}"
 make install
 popd

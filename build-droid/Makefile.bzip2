@@ -41,8 +41,8 @@ libbz2.a: $(OBJS)
 		echo $(RANLIB) libbz2.a ; \
 		$(RANLIB) libbz2.a ; \
 	fi
-	$(CC) -shared -Wl,-soname -Wl,libbz2.so.1.0 -o libbz2.so.1.0.6 $(OBJS)
-	$(CC) $(CFLAGS) -o bzip2-shared bzip2.c libbz2.so.1.0.6
+	$(CC) -shared -Wl,-soname -Wl,libbz2.so -o libbz2.so $(OBJS)
+	$(CC) $(CFLAGS) -o bzip2-shared bzip2.c libbz2.so
 
 check: test
 test: bzip2
@@ -79,11 +79,7 @@ install: bzip2 bzip2recover
 	chmod a+r $(PREFIX)/man/man1/bzip2.1
 	cp -f bzlib.h $(PREFIX)/include
 	chmod a+r $(PREFIX)/include/bzlib.h
-	cp -f libbz2.so.1.0.6 $(PREFIX)/lib
-	rm -f $(PREFIX)/lib/libbz2.so
-	rm -f $(PREFIX)/lib/libbz2.so.1.0
-	ln -s $(PREFIX)/lib/libbz2.so.1.0.6 $(PREFIX)/lib/libbz2.so.1.0
-	ln -s $(PREFIX)/lib/libbz2.so.1.0.6 $(PREFIX)/lib/libbz2.so
+	cp -f libbz2.so $(PREFIX)/lib
 	cp -f libbz2.a $(PREFIX)/lib
 	chmod a+r $(PREFIX)/lib/libbz2.a
 	cp -f bzgrep $(PREFIX)/bin/bzgrep

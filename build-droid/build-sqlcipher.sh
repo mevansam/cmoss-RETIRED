@@ -54,6 +54,13 @@ export CXXFLAGS="-Os -D_FILE_OFFSET_BITS=64 -pipe -isysroot ${SYSROOT} -I${ROOTD
 
 ./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --disable-readline --disable-tcl --enable-tempstore=no
 
+# Fix libtool to not create versioned shared libraries
+mv "libtool" "libtool~"
+sed "s/library_names_spec=\".*\"/library_names_spec=\"~##~libname~##~{shared_ext}\"/" libtool~ > libtool~1
+sed "s/soname_spec=\".*\"/soname_spec=\"~##~{libname}~##~{shared_ext}\"/" libtool~1 > libtool~2
+sed "s/~##~/\\\\$/g" libtool~2 > libtool
+chmod u+x libtool
+
 make
 make install
 popd

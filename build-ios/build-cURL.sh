@@ -62,7 +62,7 @@ then
     export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=10.5"
   fi
 fi
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-ssl=${ROOTDIR} --with-zlib=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --disable-shared --enable-static --disable-ipv6 --disable-manual --disable-verbose  # Work around curl tool not linking against static libssh2 by only building library and headers
+./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-zlib=${SDKROOT}/usr --with-ssl=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --disable-shared --enable-static --disable-ipv6 --disable-manual --disable-verbose  # Work around curl tool not linking against static libssh2 by only building library and headers
 pushd "lib"
 make
 make install

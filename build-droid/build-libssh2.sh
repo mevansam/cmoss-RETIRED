@@ -54,9 +54,15 @@ export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
 ./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-libgcrypt --with-libgcrypt-prefix=${ROOTDIR} --with-libz --with-libz-prefix=${ROOTDIR} -with-openssl --with-libssl-prefix=${ROOTDIR} CFLAGS="${CFLAGS}"
 
+# Fix libtool to not create versioned shared libraries
+mv "libtool" "libtool~"
+sed "s/library_names_spec=\".*\"/library_names_spec=\"~##~libname~##~{shared_ext}\"/" libtool~ > libtool~1
+sed "s/soname_spec=\".*\"/soname_spec=\"~##~{libname}~##~{shared_ext}\"/" libtool~1 > libtool~2
+sed "s/~##~/\\\\$/g" libtool~2 > libtool
+chmod u+x libtool
+
 make
 make install
-
 popd
 
 # Clean up

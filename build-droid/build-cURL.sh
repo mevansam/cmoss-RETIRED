@@ -52,7 +52,14 @@ export LDFLAGS="-Os -pipe -isysroot ${SYSROOT} -nostdlib -lc -Wl,-rpath-link=${S
 export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
-./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-ssl=${ROOTDIR} --with-zlib=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --disable-ipv6 --disable-manual --disable-verbose
+./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${SYSROOT}/usr --with-ssl=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --disable-ipv6 --disable-manual --disable-verbose --disable-soname-bump
+
+# Fix libtool to not create versioned shared libraries
+mv "libtool" "libtool~"
+sed "s/library_names_spec=\".*\"/library_names_spec=\"~##~libname~##~{shared_ext}\"/" libtool~ > libtool~1
+sed "s/soname_spec=\".*\"/soname_spec=\"~##~{libname}~##~{shared_ext}\"/" libtool~1 > libtool~2
+sed "s/~##~/\\\\$/g" libtool~2 > libtool
+chmod u+x libtool
 
 # Fix curl.h to compile on linux based systems
 mv "include/curl/curl.h" "include/curl/curl.h~"

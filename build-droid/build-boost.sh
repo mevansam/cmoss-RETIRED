@@ -184,9 +184,9 @@ EOF
 
 if [ "${PLATFORM}" == "arm-linux-androideabi" ]
 then
-	./b2 threading=multi --layout=versioned target-os=linux toolset=android-arm install
+	./b2 link=static threading=multi --layout=versioned target-os=linux toolset=android-arm install
 else
-	./b2 threading=multi --layout=versioned target-os=linux toolset=android-i686 install
+	./b2 link=static threading=multi --layout=versioned target-os=linux toolset=android-i686 install
 fi
 
 mv ${ROOTDIR}/include/boost-*/boost ${ROOTDIR}/include
