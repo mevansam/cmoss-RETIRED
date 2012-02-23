@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Copyright (c) 2011, Mevan Samaratunga
@@ -48,7 +48,7 @@ export NM=${DROIDTOOLS}-nm
 export STRIP=${DROIDTOOLS}-strip
 export CXXCPP=${DROIDTOOLS}-cpp
 export RANLIB=${DROIDTOOLS}-ranlib
-export LDFLAGS="-Os -nostdlib -lc -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib -lssl -lcrypto"
+export LDFLAGS="-Os -fpic -lc -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib -lssl -lcrypto"
 export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include -DSQLITE_HAS_CODEC"
 export CXXFLAGS="-Os -D_FILE_OFFSET_BITS=64 -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include -DSQLITE_HAS_CODEC"
 

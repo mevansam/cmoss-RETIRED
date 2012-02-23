@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Copyright (c) 2011, Mevan Samaratunga
@@ -48,7 +48,7 @@ export NM=${DROIDTOOLS}-nm
 export STRIP=${DROIDTOOLS}-strip
 export CXXCPP=${DROIDTOOLS}-cpp
 export RANLIB=${DROIDTOOLS}-ranlib
-export LDFLAGS="-Os -pipe -isysroot ${SYSROOT} -L${ROOTDIR}/lib"
+export LDFLAGS="-Os -fpic -nostdlib -lc -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib"
 export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
@@ -68,25 +68,31 @@ sed 's/cd .* cmake_symlink_library .*$//g' build/src/CMakeFiles/yajl.dir/build.m
 sed 's/\.dylib/\.so/g' build/src/CMakeFiles/yajl.dir/build.make~1 > build/src/CMakeFiles/yajl.dir/build.make
 
 FILES=`sed 's/^.*dylib CMakeFiles/CMakeFiles/' build/src/CMakeFiles/yajl.dir/link.txt`
-echo "${CC} -nostdlib -lc -shared -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -I${SYSROOT}/usr/include -o ../yajl-${YAJL_VERSION}/lib/libyajl.so $FILES" \
-	> build/src/CMakeFiles/yajl.dir/link.txt
+cat > build/src/CMakeFiles/yajl.dir/link.txt <<EOF
+${CC} -shared -fpic -nostdlib -lc -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -I${SYSROOT}/usr/include -o ../yajl-${YAJL_VERSION}/lib/libyajl.so $FILES
+EOF
 
 STATICLINKFILES="${AR} `sed 's/\/usr\/bin\/ar //' build/src/CMakeFiles/yajl_s.dir/link.txt | sed 's/^\/usr\/bin\/ranlib.*//'`"
-
-echo "$STATICLINKFILES\n${RANLIB} ../yajl-${YAJL_VERSION}/lib/libyajl_s.a" \
-	> build/src/CMakeFiles/yajl_s.dir/link.txt
+cat > build/src/CMakeFiles/yajl_s.dir/link.txt <<EOF
+$STATICLINKFILES
+${RANLIB} ../yajl-${YAJL_VERSION}/lib/libyajl_s.a
+EOF
 
 mv "build/src/cmake_install.cmake" "build/src/cmake_install.cmake~"
 sed 's/\.dylib/\.so/g' build/src/cmake_install.cmake~ > build/src/cmake_install.cmake~1
 sed 's/\".*\/libyajl\.2\.0\.1\.so\"//' build/src/cmake_install.cmake~1 > build/src/cmake_install.cmake~2
 sed 's/\".*\/libyajl\.2\.so\"//' build/src/cmake_install.cmake~2 > build/src/cmake_install.cmake
 
-echo ".PHONY: all distro" > Makefile
-echo "all: distro" >> Makefile
-echo "\ndistro:" >> Makefile
-echo "\t@cd build && make yajl yajl_s" >> Makefile
-echo "\ninstall: all" >> Makefile
-echo "\t@cd build && make install" >> Makefile
+cat > Makefile <<EOF
+.PHONY: all distro
+all: distro
+
+distro:
+	@cd build && make yajl yajl_s
+
+install: all
+	@cd build && make install
+EOF
 
 make
 make install

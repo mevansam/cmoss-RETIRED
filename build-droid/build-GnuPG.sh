@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Copyright (c) 2010, Pierre-Olivier Latour
@@ -52,7 +52,7 @@ export LDFLAGS="-Os -pipe -isysroot ${SYSROOT} -L${ROOTDIR}/lib"
 export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
-./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${SYSROOT} --with-bzip2==${ROOTDIR}
+./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-bzip2==${ROOTDIR}
 
 mv "Makefile" "Makefile~"
 sed '/checks =/d' "Makefile~" > "Makefile"  # Patch Makefile to disable checks

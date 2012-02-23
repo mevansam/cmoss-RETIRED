@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Retrieve NDK path to use
@@ -37,7 +37,7 @@ export OPENSSL_VERSION="1.0.0f"
 
 # Project versions to use to build libssh2 and cURL (changing this may break the build)
 export LIBSSH2_VERSION="1.3.0"
-export CURL_VERSION="7.23.1"
+export CURL_VERSION="7.24.0"
 
 # Project version to use to build expat (changing this may break the build)
 export EXPAT_VERSION="2.0.1"
@@ -119,7 +119,7 @@ do
 	export DROIDTOOLS=${TMPDIR}/droidtoolchains/${PLATFORM}/bin/${PLATFORM}
 	export SYSROOT=${TMPDIR}/droidtoolchains/${PLATFORM}/sysroot
 
-	# Build c-ares
+	# Build zlib
 	${TOPDIR}/build-droid/build-zlib.sh > "${LOGPATH}-zlib.log"
 
 	# Build c-ares
@@ -181,14 +181,16 @@ cp -r ${TMPDIR}/build/droid/arm-linux-androideabi/include/ ${BINDIR}/include
 mkdir -p ${BINDIR}/lib/armv7
 
 #cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/x86
+#cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.la ${BINDIR}/lib/x86
 
 #(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
 #(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
 
 cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.a ${BINDIR}/lib/armv7
+cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.la ${BINDIR}/lib/armv7
 
 (cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/armv7 && tar xfB - )
-(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/armv7 && tar xfB - )
+#(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/armv7 && tar xfB - )
 
 echo "**** Android c/c++ open source build completed ****"
 

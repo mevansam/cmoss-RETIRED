@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Copyright (c) 2011, Mevan Samaratunga
@@ -189,8 +189,22 @@ else
 	./b2 link=static threading=multi --layout=versioned target-os=linux toolset=android-i686 install
 fi
 
-mv ${ROOTDIR}/include/boost-*/boost ${ROOTDIR}/include
+mv -f ${ROOTDIR}/include/boost-*/boost ${ROOTDIR}/include
 rm -fr ${ROOTDIR}/include/boost-*
+
+# Combine boost libraries into one static archive
+
+mkdir -p "${BOOST_SOURCE_NAME}/tmp/obj"
+for a in $(find "${ROOTDIR}/lib" -name "libboost_*.a" -print); do
+
+	echo Decomposing $a...
+	(cd ${BOOST_SOURCE_NAME}/tmp/obj; ${DROIDTOOLS}-ar -x $a );
+
+done
+
+OBJFILES=`find "${BOOST_SOURCE_NAME}/tmp/obj" -name "*.o" -print`
+${DROIDTOOLS}-ar rv "${ROOTDIR}/lib/libboost.a" $OBJFILES
+find "${ROOTDIR}/lib" -name "libboost_*.a" -exec rm -f {} \;
 
 #===============================================================================
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Copyright (c) 2010, Pierre-Olivier Latour
@@ -38,6 +38,9 @@ tar zxvf "openssl-${OPENSSL_VERSION}.tar.gz"
 
 # Build
 pushd "openssl-${OPENSSL_VERSION}"
+
+DROID_GCC_LIBS=${TMPDIR}/droidtoolchains/${PLATFORM}/lib/gcc/arm-linux-androideabi/4.4.3
+
 export CC=${DROIDTOOLS}-gcc
 export LD=${DROIDTOOLS}-ld
 export CPP=${DROIDTOOLS}-cpp
@@ -48,7 +51,7 @@ export NM=${DROIDTOOLS}-nm
 export STRIP=${DROIDTOOLS}-strip
 export CXXCPP=${DROIDTOOLS}-cpp
 export RANLIB=${DROIDTOOLS}-ranlib
-export LDFLAGS="-Os -pipe -dynamiclib -isysroot ${SYSROOT} -L${ROOTDIR}/lib"
+export LDFLAGS="-Os -dynamiclib -fPIC -nostdlib -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${DROID_GCC_LIBS} -L${ROOTDIR}/lib -lc -lgcc"
 export CFLAGS="-Os -pipe -UOPENSSL_BN_ASM_PART_WORDS -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 

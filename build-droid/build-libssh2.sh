@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Copyright (c) 2010, Pierre-Olivier Latour
@@ -48,11 +48,11 @@ export NM=${DROIDTOOLS}-nm
 export STRIP=${DROIDTOOLS}-strip
 export CXXCPP=${DROIDTOOLS}-cpp
 export RANLIB=${DROIDTOOLS}-ranlib
-export LDFLAGS="-Os -pipe -isysroot ${SYSROOT} -L${ROOTDIR}/lib -lgpg-error"
+export LDFLAGS="-Os -fpic -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib -lz -lgpg-error -lgcrypt -lcrypto -lssl"
 export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
-./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-libgcrypt --with-libgcrypt-prefix=${ROOTDIR} --with-libz --with-libz-prefix=${ROOTDIR} -with-openssl --with-libssl-prefix=${ROOTDIR} CFLAGS="${CFLAGS}"
+./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-libz --with-libz-prefix=${ROOTDIR} --with-openssl --with-libssl-prefix=${ROOTDIR} --with-libgcrypt --with-libgcrypt-prefix=${ROOTDIR} --with-libssl-prefix=${ROOTDIR} CFLAGS="${CFLAGS}"
 
 # Fix libtool to not create versioned shared libraries
 mv "libtool" "libtool~"
