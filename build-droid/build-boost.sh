@@ -93,6 +93,8 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-Os
 <compileflags>-O2
 <compileflags>-g
+<compileflags>-std=gnu++0x
+<compileflags>-Wno-variadic-macros
 <compileflags>-fexceptions
 <compileflags>-frtti
 <compileflags>-fpic
@@ -121,15 +123,14 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-fdata-sections
 <cxxflags>-D_REENTRANT
 <cxxflags>-D_GLIBCXX__PTHREADS
-<cxxflags>-DBOOST_THREAD_LINUX
-<cxxflags>-DBOOST_HAS_PTHREADS
-<cxxflags>-DBOOST_HAS_GETTIMEOFDAY
 ;
 
 using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-Os
 <compileflags>-O2
 <compileflags>-g
+<compileflags>-std=gnu++0x
+<compileflags>-Wno-variadic-macros
 <compileflags>-fexceptions
 <compileflags>-frtti
 <compileflags>-fpic
@@ -167,9 +168,6 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <cxxflags>-D__arm__
 <cxxflags>-D_REENTRANT
 <cxxflags>-D_GLIBCXX__PTHREADS
-<cxxflags>-DBOOST_THREAD_LINUX
-<cxxflags>-DBOOST_HAS_PTHREADS
-<cxxflags>-DBOOST_HAS_GETTIMEOFDAY
 ;
 EOF
 
@@ -184,27 +182,24 @@ EOF
 
 if [ "${PLATFORM}" == "arm-linux-androideabi" ]
 then
-	./b2 link=static threading=multi --layout=versioned target-os=linux toolset=android-arm install
+	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-arm install
 else
-	./b2 link=static threading=multi --layout=versioned target-os=linux toolset=android-i686 install
+	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-i686 install
 fi
-
-mv -f ${ROOTDIR}/include/boost-*/boost ${ROOTDIR}/include
-rm -fr ${ROOTDIR}/include/boost-*
 
 # Combine boost libraries into one static archive
 
-mkdir -p "${BOOST_SOURCE_NAME}/tmp/obj"
-for a in $(find "${ROOTDIR}/lib" -name "libboost_*.a" -print); do
+#mkdir -p "${BOOST_SOURCE_NAME}/tmp/obj"
+#for a in $(find "${ROOTDIR}/lib" -name "libboost_*.a" -print); do
 
-	echo Decomposing $a...
-	(cd ${BOOST_SOURCE_NAME}/tmp/obj; ${DROIDTOOLS}-ar -x $a );
+#	echo Decomposing $a...
+#	(cd ${BOOST_SOURCE_NAME}/tmp/obj; ${DROIDTOOLS}-ar -x $a );
 
-done
+#done
 
-OBJFILES=`find "${BOOST_SOURCE_NAME}/tmp/obj" -name "*.o" -print`
-${DROIDTOOLS}-ar rv "${ROOTDIR}/lib/libboost.a" $OBJFILES
-find "${ROOTDIR}/lib" -name "libboost_*.a" -exec rm -f {} \;
+#OBJFILES=`find "${BOOST_SOURCE_NAME}/tmp/obj" -name "*.o" -print`
+#${DROIDTOOLS}-ar rv "${ROOTDIR}/lib/libboost.a" $OBJFILES
+#find "${ROOTDIR}/lib" -name "libboost_*.a" -exec rm -f {} \;
 
 #===============================================================================
 
