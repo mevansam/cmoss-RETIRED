@@ -29,15 +29,15 @@ set -e
 # Download source
 if [ ! -e "sqlcipher-${SQLCIPHER_VERSION}.tar.gz" ]
 then
-  curl $PROXY -o "sqlcipher-${SQLCIPHER_VERSION}.tar.gz" -L "https://github.com/sjlombardo/sqlcipher/tarball/v${SQLCIPHER_VERSION}"
+  curl $PROXY -o "sqlcipher-${SQLCIPHER_VERSION}.tar.gz" -L "https://nodeload.github.com/sqlcipher/sqlcipher/tarball/v${SQLCIPHER_VERSION}"
 fi
 
 # Extract source
-rm -rf sjlombardo-sqlcipher-*
+rm -rf *-sqlcipher-*
 tar zxvf "sqlcipher-${SQLCIPHER_VERSION}.tar.gz"
 
 # Build
-pushd sjlombardo-sqlcipher-*
+pushd *-sqlcipher-*
 export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
 export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${SDK}.sdk"
 export CC=${DEVROOT}/usr/bin/gcc
@@ -62,10 +62,10 @@ then
     export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=10.5"
   fi
 fi
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --disable-readline --disable-tcl --enable-tempstore=no
+./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --disable-readline --disable-tcl --enable-threadsafe --enable-cross-thread-connections --enable-tempstore=no
 make
 make install
 popd
 
 # Clean up
-rm -rf sjlombardo-sqlcipher-*
+rm -rf *-sqlcipher-*

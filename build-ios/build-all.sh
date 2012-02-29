@@ -44,7 +44,7 @@ export EXPAT_VERSION="2.0.1"
 export YAJL_VERSION="2.0.1"
 
 # Project version to use to build sqlcipher
-export SQLCIPHER_VERSION="1.1.8"
+export SQLCIPHER_VERSION="2.0.3"
 
 # Project versions to use for SOCI (Sqlite3 C++ database library)
 export SOCI_VERSION="3.1.0"

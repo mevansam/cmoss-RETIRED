@@ -29,15 +29,15 @@ set -e
 # Download source
 if [ ! -e "sqlcipher-${SQLCIPHER_VERSION}.tar.gz" ]
 then
-  curl $PROXY -o "sqlcipher-${SQLCIPHER_VERSION}.tar.gz" -L "https://github.com/sjlombardo/sqlcipher/tarball/v${SQLCIPHER_VERSION}"
+  curl $PROXY -o "sqlcipher-${SQLCIPHER_VERSION}.tar.gz" -L "https://nodeload.github.com/sqlcipher/sqlcipher/tarball/v${SQLCIPHER_VERSION}"
 fi
 
 # Extract source
-rm -rf sjlombardo-sqlcipher-*
+rm -rf *-sqlcipher-*
 tar zxvf "sqlcipher-${SQLCIPHER_VERSION}.tar.gz"
 
 # Build
-pushd sjlombardo-sqlcipher-*
+pushd *-sqlcipher-*
 export CC=${DROIDTOOLS}-gcc
 export LD=${DROIDTOOLS}-ld
 export CPP=${DROIDTOOLS}-cpp
@@ -52,7 +52,7 @@ export LDFLAGS="-Os -fpic -lc -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/us
 export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include -DSQLITE_HAS_CODEC"
 export CXXFLAGS="-Os -D_FILE_OFFSET_BITS=64 -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include -DSQLITE_HAS_CODEC"
 
-./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --disable-readline --disable-tcl --enable-tempstore=no
+./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --disable-readline --disable-tcl --enable-threadsafe --enable-cross-thread-connections --enable-tempstore=no
 
 # Fix libtool to not create versioned shared libraries
 mv "libtool" "libtool~"
@@ -66,4 +66,4 @@ make install
 popd
 
 # Clean up
-rm -rf sjlombardo-sqlcipher-*
+rm -rf *-sqlcipher-*
