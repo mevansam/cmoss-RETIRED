@@ -6,3 +6,8 @@ bin/
 tmp/
 log/
 
+droid-testapp/bin
+droid-testapp/gen
+droid-testapp/libs
+droid-testapp/obj
+
