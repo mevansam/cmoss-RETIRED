@@ -20,6 +20,7 @@ fi
 
 # Project version to use to build zlib (changing this may break the build)
 export ZLIB_VERSION="1.2.6"
+export MINIZIP_VERSION="101h"
 
 # Project version to use to build c-ares (changing this may break the build)
 export CARES_VERSION="1.7.5"
@@ -121,6 +122,9 @@ do
 
 	# Build zlib
 	${TOPDIR}/build-droid/build-zlib.sh > "${LOGPATH}-zlib.log"
+
+	# Build minizip
+	${TOPDIR}/build-droid/build-minizip.sh > "${LOGPATH}-minizip.log"
 
 	# Build c-ares
 	${TOPDIR}/build-droid/build-cares.sh > "${LOGPATH}-cares.log"
