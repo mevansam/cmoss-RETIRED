@@ -25,7 +25,7 @@ BUILDDIR=$(dirname $0)
 
 pushd $BUILDDIR
 TOPDIR=$(dirname $(pwd))
-BINDIR=$TOPDIR/bin/cacerts
+BINDIR=$TOPDIR/bin/certs
 ROOTDIR=$TOPDIR/tmp/build/cacerts
 TMPDIR=$TOPDIR/tmp/build/cacerts/tmp
 popd
@@ -45,19 +45,19 @@ c_rehash ${TMPDIR}
 cp ${TMPDIR}/*.0 ${ROOTDIR}
 rm -r ${TMPDIR}
 
-CACERTS_ZIP=${ROOTDIR}/cacerts.zip
+CERTS_ZIP=${ROOTDIR}/certs.zip
 
 pushd ${ROOTDIR}/..
-zip -r ${CACERTS_ZIP} cacerts/
+zip -r ${CERTS_ZIP} cacerts/
 popd
 
 rm ${ROOTDIR}/*.0
 
-cat > ${BINDIR}/openssl_cacerts.h <<EOF
-/* Generated header containing zipped cacerts binary and inline function to unzip it : do not modify */
+cat > ${BINDIR}/openssl_certs.h <<EOF
+/* Generated header containing zipped certs binary and inline function to unzip it : do not modify */
 
-#if !defined(_OPENSSL_CACERTS_H__INCLUDED_)
-#define _OPENSSL_CACERTS_H__INCLUDED_
+#if !defined(_OPENSSL_CERTS_H__INCLUDED_)
+#define _OPENSSL_CERTS_H__INCLUDED_
 
 #include <stdlib.h>
 #include <string.h>
@@ -73,9 +73,9 @@ cat > ${BINDIR}/openssl_cacerts.h <<EOF
 
 EOF
 
-cat ${CACERTS_ZIP} | ( echo "unsigned char _certsZipBinaryData[] = {"; xxd -i; echo "};" ) >> ${BINDIR}/openssl_cacerts.h
+cat ${CERTS_ZIP} | ( echo "unsigned char _certsZipBinaryData[] = {"; xxd -i; echo "};" ) >> ${BINDIR}/openssl_certs.h
 
-cat >> ${BINDIR}/openssl_cacerts.h <<EOF
+cat >> ${BINDIR}/openssl_certs.h <<EOF
 
 #define WRITEBUFFERSIZE  8192
 #define MAXFILENAMELEN   256
@@ -261,5 +261,5 @@ inline int extractCerts(const char* path) {
     return 0;
 }
 
-#endif // !defined(_OPENSSL_CACERTS_H__INCLUDED_)
+#endif // !defined(_OPENSSL_CERTS_H__INCLUDED_)
 EOF
