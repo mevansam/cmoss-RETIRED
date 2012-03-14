@@ -22,6 +22,9 @@ fi
 export ZLIB_VERSION="1.2.6"
 export MINIZIP_VERSION="101h"
 
+# Project version to use to build icu (changing this may break the build)
+export ICU_VERSION=4.8.1.1
+
 # Project version to use to build c-ares (changing this may break the build)
 export CARES_VERSION="1.7.5"
 
@@ -54,6 +57,9 @@ export SOCI_VERSION="3.1.0"
 
 # Project version to use to build boost C++ libraries
 export BOOST_VERSION=1.48.0
+
+# Project version to use to build pion (changing this may break the build)
+export PION_VERSION=4.0.11
 
 # Create dist folder
 BUILDDIR=$(dirname $0)
@@ -126,6 +132,9 @@ do
 	# Build minizip
 	${TOPDIR}/build-droid/build-minizip.sh > "${LOGPATH}-minizip.log"
 
+	# Build icu
+	${TOPDIR}/build-droid/build-icu.sh > "${LOGPATH}-icu.log"
+
 	# Build c-ares
 	${TOPDIR}/build-droid/build-cares.sh > "${LOGPATH}-cares.log"
 
@@ -164,6 +173,9 @@ do
 
 	# Build BOOST
 	${TOPDIR}/build-droid/build-boost.sh > "${LOGPATH}-boost.log"
+
+	# Build PION
+	${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
 
 	# Remove junk
 	rm -rf "${ROOTDIR}/bin"

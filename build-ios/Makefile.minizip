@@ -1,0 +1,31 @@
+INCLUDEDIRS =
+
+OBJS = unzip.o zip.o ioapi.o
+
+libminizip.so : ${OBJS}
+	${CC} ${LDFLAGS} -o $@ $?
+
+libminizip.a : ${OBJS}
+	${AR} rv $@ $?
+	${RANLIB} $@
+
+ioapi.o : ioapi.c
+	${CC} -c $? ${CFLAGS} ${INCLUDEDIRS}
+
+zip.o : zip.c
+	${CC} -c $? ${CFLAGS} ${INCLUDEDIRS}
+
+unzip.o : unzip.c
+	${CC} -c $? ${CFLAGS} ${INCLUDEDIRS}
+
+install : libminizip.a libminizip.so
+	if ( test ! -d ${PREFIX}/lib ) ; then mkdir -p ${PREFIX}/lib ; fi
+	if ( test ! -d ${PREFIX}/include/zip ) ; then mkdir -p ${PREFIX}/include/zip ; fi
+	mv -f libminizip.a ${PREFIX}/lib
+	mv -f libminizip.so ${PREFIX}/lib
+	cp -f *.h ${PREFIX}/include/zip
+	rm *.o
+
+clean :
+	rm *.o
+	rm -f libminizip.so
