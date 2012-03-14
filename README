@@ -2,17 +2,20 @@ The CMOSS scripts can be used to build the following C/C++ Open Source Software 
 
 * c-ares : http://c-ares.haxx.se
 * bzip2 : http://bzip.org/
+* zip : http://zlib.net
+* icu : http://site.icu-project.org/
 * GnuPG 1.4.x, Libgcrypt, Libgpg-error : http://www.gnupg.org/
 * OpenSSL - http://http://www.openssl.org/
 * libSSH2 - http://www.libssh2.org/
-* cURL - http://curl.haxx.se/
-* expat - http://expat.sourceforge.net/
-* yajl - http://lloyd.github.com/yajl/
-* sqlcipher - http://sqlcipher.net/
-* soci - http://soci.sourceforge.net/
-* boost - http://www.boost.org/
+* cURL - http://curl.haxx.se/ - C HTTP networking API
+* expat - http://expat.sourceforge.net/ - XML parser
+* yajl - http://lloyd.github.com/yajl/ - JSON parser
+* sqlcipher - http://sqlcipher.net/ - SQLite with encryption
+* boost - http://www.boost.org/ - C++ utilities
+* soci - http://soci.sourceforge.net/ - generic C++ database API
+* pion : http://pion.org/ - C++ HTTP API with a light weight HTTP Server implementation
 
-The android kernel already provides some of these shared libraries so check if they are available before including them in your NDK project.
+The android kernel already provides some of these shared libraries so check if they are available before including them in your NDK project. For example zlib is part of both Android and IOS distributions and is provided only as an aid in linking, and both openssl and icu are part of the Android distribution.
 
 The scripts will download the source code from the internet and build them locally. So your build machine needs to be connected to the internet when building. Once the source code archives have been downloaded they will be saved in the [cmoss root path]/tmp folder and will not be downloaded again unless you delete them or change the version. The builds have been tested with the versions hard-coded in the script files. If you change these versions it is possible the build for that library may break. If you do find a new version that breaks a build please let me know so it can be fixed.
 
