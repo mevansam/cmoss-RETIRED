@@ -7,13 +7,13 @@ The CMOSS scripts can be used to build the following C/C++ Open Source Software 
 * GnuPG 1.4.x, Libgcrypt, Libgpg-error : http://www.gnupg.org/
 * OpenSSL - http://http://www.openssl.org/
 * libSSH2 - http://www.libssh2.org/
-* cURL - http://curl.haxx.se/ - C HTTP networking API
+* cURL - http://curl.haxx.se/ - C HTTP API
 * expat - http://expat.sourceforge.net/ - XML parser
 * yajl - http://lloyd.github.com/yajl/ - JSON parser
 * sqlcipher - http://sqlcipher.net/ - SQLite with encryption
 * boost - http://www.boost.org/ - C++ utilities
 * soci - http://soci.sourceforge.net/ - generic C++ database API
-* pion : http://pion.org/ - C++ HTTP API with a light weight HTTP Server implementation
+* pion : http://pion.org/ - C++ HTTP API
 
 The android kernel already provides some of these shared libraries so check if they are available before including them in your NDK project. For example zlib is part of both Android and IOS distributions and is provided only as an aid in linking, and both openssl and icu are part of the Android distribution.
 
