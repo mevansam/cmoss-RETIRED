@@ -26,6 +26,13 @@ set -e
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+SDK_VERSION=`cat ${SDK}/RELEASE.TXT | sed "s/.*-crystax-.*/crystax/"`
+if [ "$SDK_VERSION" != "crystax" ]
+then
+	echo "Boost can only be built using the crystax build of the NDK. You can download it from http://www.crystax.net/en/android/ndk"
+	exit
+fi
+
 BOOST_SOURCE_NAME=boost_${BOOST_VERSION//./_}
 
 # Download source
@@ -61,7 +68,7 @@ fi
 # -------------------------------------------------------------
 
 # Apply patches to boost
-PATCHES_DIR=droid-boost-patch/build
+PATCHES_DIR=droid-boost-patch
 if [ ! -d "$PATCHES_DIR" ] ; then
 	echo "ERROR: Could not locate droid build patch files."
 	exit 1
@@ -85,8 +92,6 @@ else
 	done
 fi
 
-BOOSTPATCH=${TMPDIR}/${BOOST_SOURCE_NAME}/droid-boost-patch
-
 cat >> tools/build/v2/user-config.jam <<EOF
 
 using android : i686 : ${DROIDTOOLS}-g++ :
@@ -106,15 +111,15 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-DANDROID
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
-<compileflags>-I${BOOSTPATCH}/crystax-ndk-headers/platforms/android-14/arch-x86/usr/include
-<compileflags>-I${BOOSTPATCH}/crystax-ndk-headers/sources/cxx-stl/gnu-libstdc++/include/4.4.3
-<compileflags>-I${BOOSTPATCH}/crystax-ndk-headers/sources/cxx-stl/gnu-libstdc++/libs/x86/4.4.3/include
+<compileflags>-I${SDK}/platforms/android-14/arch-x86/usr/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include/4.4.3
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86/4.4.3/include
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
 <linkflags>-Wl,-rpath-link=${SYSROOT}/usr/lib
 <linkflags>-L${SYSROOT}/usr/lib
-<linkflags>-L${BOOSTPATCH}/crystax-ndk-headers/sources/cxx-stl/gnu-libstdc++/libs/x86/4.4.3
+<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86/4.4.3
 <linkflags>-L${ROOTDIR}/lib
 # Flags above are for android
 <architecture>x86
@@ -150,15 +155,15 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-DANDROID
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
-<compileflags>-I${BOOSTPATCH}/crystax-ndk-headers/platforms/android-14/arch-arm/usr/include
-<compileflags>-I${BOOSTPATCH}/crystax-ndk-headers/sources/cxx-stl/gnu-libstdc++/include/4.4.3
-<compileflags>-I${BOOSTPATCH}/crystax-ndk-headers/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/4.4.3/include
+<compileflags>-I${SDK}/platforms/android-14/arch-arm/usr/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include/4.4.3
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/4.4.3/include
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
 <linkflags>-Wl,-rpath-link=${SYSROOT}/usr/lib
 <linkflags>-L${SYSROOT}/usr/lib
-<linkflags>-L${BOOSTPATCH}/crystax-ndk-headers/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/4.4.3
+<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/4.4.3
 <linkflags>-L${ROOTDIR}/lib
 # Flags above are for android
 <architecture>arm
@@ -189,17 +194,17 @@ fi
 
 # Combine boost libraries into one static archive
 
-#mkdir -p "${BOOST_SOURCE_NAME}/tmp/obj"
-#for a in $(find "${ROOTDIR}/lib" -name "libboost_*.a" -print); do
+mkdir -p "${BOOST_SOURCE_NAME}/tmp/obj"
+for a in $(find "${ROOTDIR}/lib" -name "libboost_*.a" -print); do
 
-#	echo Decomposing $a...
-#	(cd ${BOOST_SOURCE_NAME}/tmp/obj; ${DROIDTOOLS}-ar -x $a );
+	echo Decomposing $a...
+	(cd ${BOOST_SOURCE_NAME}/tmp/obj; ${DROIDTOOLS}-ar -x $a );
 
-#done
+done
 
-#OBJFILES=`find "${BOOST_SOURCE_NAME}/tmp/obj" -name "*.o" -print`
-#${DROIDTOOLS}-ar rv "${ROOTDIR}/lib/libboost.a" $OBJFILES
-#find "${ROOTDIR}/lib" -name "libboost_*.a" -exec rm -f {} \;
+OBJFILES=`find "${BOOST_SOURCE_NAME}/tmp/obj" -name "*.o" -print`
+${DROIDTOOLS}-ar rv "${ROOTDIR}/lib/libboost.a" $OBJFILES
+find "${ROOTDIR}/lib" -name "libboost_*.a" -exec rm -f {} \;
 
 #===============================================================================
 
