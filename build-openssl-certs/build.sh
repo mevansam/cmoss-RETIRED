@@ -80,12 +80,21 @@ cat >> ${BINDIR}/openssl_certs.h <<EOF
 #define WRITEBUFFERSIZE  8192
 #define MAXFILENAMELEN   256
 
+#ifndef ANDROID
 extern int errno;
+#endif
+
+char __CERTS_PATH[MAXFILENAMELEN];
+char __CACERTS_PATH[MAXFILENAMELEN];
 
 inline int extractCerts(const char* path) {
 
+	__CERTS_PATH[0] = '\0';
+	__CACERTS_PATH[0] = '\0';
+
     char fileName[MAXFILENAMELEN];
 
+    int err = UNZ_OK;
     struct utimbuf ut;
 
     struct tm zipTimestamp;
@@ -99,7 +108,16 @@ inline int extractCerts(const char* path) {
 
     ut.actime = ut.modtime = mktime(&zipTimestamp);
 
-	snprintf(fileName, MAXFILENAMELEN, "%s/%s", path, "certs.zip");
+	TRACE("verifying cert path '%s'", path);
+
+	if ((err = mkdir(path, 0775)) && errno != EEXIST) {
+        ERROR("Error %d returned while creating destination directory '%s'.", err, path);
+		return err;
+	}
+
+	snprintf(__CERTS_PATH, MAXFILENAMELEN, "%s", path);
+	snprintf(__CACERTS_PATH, MAXFILENAMELEN, "%s/cacerts", path);
+	snprintf(fileName, MAXFILENAMELEN, "%s/certs.zip", path);
 
 	time_t timestamp = 0;
 	int fd = open(fileName, O_RDONLY);
@@ -107,9 +125,13 @@ inline int extractCerts(const char* path) {
 		struct stat fileStat;
 		if (fstat(fd, &fileStat) == 0)
 		{
+#ifdef __APPLE__
 			timestamp = fileStat.st_mtimespec.tv_sec;
+#else
+			timestamp = fileStat.st_mtime;
+#endif
 			if (ut.modtime <= timestamp) {
-				TRACE("Certs zip file '%s' is up to date.", fileName);
+				TRACE("certs zip file '%s' is up to date.", fileName);
 				close(fd);
 				return 0;
 			}
@@ -117,7 +139,7 @@ inline int extractCerts(const char* path) {
 	}
 	close(fd);
 
-	TRACE("Extracting certs zip file '%s'.", fileName);
+	TRACE("extracting certs zip file '%s'.", fileName);
 
 	FILE* certZipFile = fopen(fileName, "wb");
 	fwrite(_certsZipBinaryData, 1, sizeof(_certsZipBinaryData), certZipFile);
@@ -125,9 +147,7 @@ inline int extractCerts(const char* path) {
 
 	utime(fileName, &ut);
 
-    int err = UNZ_OK;
 	unzFile uf = NULL;
-
 	if (!(uf = unzOpen(fileName)))
 		return UNZ_INTERNALERROR;
 
@@ -248,7 +268,7 @@ inline int extractCerts(const char* path) {
             err = unzGoToNextFile(uf);
             if (err != UNZ_OK)
             {
-            	ERROR("Error %d returned by unzGoToNextFile()",err);
+            	ERROR("Error %d returned by unzGoToNextFile()", err);
                 unzCloseCurrentFile(uf);
                 return err;
             }
