@@ -101,7 +101,6 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-std=gnu++0x
 <compileflags>-Wno-variadic-macros
 <compileflags>-fexceptions
-<compileflags>-frtti
 <compileflags>-fpic
 <compileflags>-ffunction-sections
 <compileflags>-funwind-tables
@@ -126,6 +125,7 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-fvisibility=hidden
 <compileflags>-fvisibility-inlines-hidden
 <compileflags>-fdata-sections
+<cxxflags>-frtti
 <cxxflags>-D_REENTRANT
 <cxxflags>-D_GLIBCXX__PTHREADS
 ;
@@ -137,7 +137,6 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-std=gnu++0x
 <compileflags>-Wno-variadic-macros
 <compileflags>-fexceptions
-<compileflags>-frtti
 <compileflags>-fpic
 <compileflags>-ffunction-sections
 <compileflags>-funwind-tables
@@ -170,6 +169,7 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-fvisibility=hidden
 <compileflags>-fvisibility-inlines-hidden
 <compileflags>-fdata-sections
+<cxxflags>-frtti
 <cxxflags>-D__arm__
 <cxxflags>-D_REENTRANT
 <cxxflags>-D_GLIBCXX__PTHREADS
