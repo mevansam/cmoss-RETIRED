@@ -26,12 +26,12 @@ set -e
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-SDK_VERSION=`cat ${SDK}/RELEASE.TXT | sed "s/.*-crystax-.*/crystax/"`
-if [ "$SDK_VERSION" != "crystax" ]
-then
-	echo "Boost can only be built using the crystax build of the NDK. You can download it from http://www.crystax.net/en/android/ndk"
-	exit
-fi
+#SDK_VERSION=`cat ${SDK}/RELEASE.TXT | sed "s/.*-crystax-.*/crystax/"`
+#if [ "$SDK_VERSION" != "crystax" ]
+#then
+#	echo "Boost can only be built using the crystax build of the NDK. You can download it from http://www.crystax.net/en/android/ndk"
+#	exit
+#fi
 
 BOOST_SOURCE_NAME=boost_${BOOST_VERSION//./_}
 
@@ -111,14 +111,14 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
 <compileflags>-I${SDK}/platforms/android-14/arch-x86/usr/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include/4.4.3
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86/4.4.3/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86/include
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
 <linkflags>-Wl,-rpath-link=${SYSROOT}/usr/lib
 <linkflags>-L${SYSROOT}/usr/lib
-<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86/4.4.3
+<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86
 <linkflags>-L${ROOTDIR}/lib
 # Flags above are for android
 <architecture>x86
@@ -155,14 +155,14 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
 <compileflags>-I${SDK}/platforms/android-14/arch-arm/usr/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include/4.4.3
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/4.4.3/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/include
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
 <linkflags>-Wl,-rpath-link=${SYSROOT}/usr/lib
 <linkflags>-L${SYSROOT}/usr/lib
-<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/4.4.3
+<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a
 <linkflags>-L${ROOTDIR}/lib
 # Flags above are for android
 <architecture>arm
@@ -187,9 +187,9 @@ EOF
 
 if [ "${PLATFORM}" == "arm-linux-androideabi" ]
 then
-	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-arm install
+	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-arm --disable-filesystem3 define=BOOST_FILESYSTEM_VERSION=2 -d+2 install
 else
-	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-i686 install
+	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-i686 --disable-filesystem3 define=BOOST_FILESYSTEM_VERSION=2 -d+2 install
 fi
 
 # Combine boost libraries into one static archive
@@ -204,7 +204,7 @@ done
 
 OBJFILES=`find "${BOOST_SOURCE_NAME}/tmp/obj" -name "*.o" -print`
 ${DROIDTOOLS}-ar rv "${ROOTDIR}/lib/libboost.a" $OBJFILES
-find "${ROOTDIR}/lib" -name "libboost_*.a" -exec rm -f {} \;
+#find "${ROOTDIR}/lib" -name "libboost_*.a" -exec rm -f {} \;
 
 #===============================================================================
 
