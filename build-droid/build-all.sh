@@ -56,7 +56,7 @@ export SQLCIPHER_VERSION="2.0.3"
 export SOCI_VERSION="3.1.0"
 
 # Project version to use to build boost C++ libraries
-export BOOST_VERSION=1.48.0
+export BOOST_VERSION=1.49.0
 
 # Project version to use to build pion (changing this may break the build)
 export PION_VERSION=4.0.11
