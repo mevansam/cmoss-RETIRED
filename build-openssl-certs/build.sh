@@ -87,8 +87,12 @@ extern int errno;
 char __CERTS_PATH[MAXFILENAMELEN];
 char __CACERTS_PATH[MAXFILENAMELEN];
 
-inline int extractCerts(const char* path) {
-
+#ifdef __cplusplus
+inline int extractCerts(const char* path)
+#else
+inline static int extractCerts(const char* path)
+#endif
+{
 	__CERTS_PATH[0] = '\0';
 	__CACERTS_PATH[0] = '\0';
 
