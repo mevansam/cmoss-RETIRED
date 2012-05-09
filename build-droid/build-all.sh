@@ -19,7 +19,7 @@ else
 fi
 
 # Project version to use to build zlib (changing this may break the build)
-export ZLIB_VERSION="1.2.6"
+export ZLIB_VERSION="1.2.7"
 export MINIZIP_VERSION="101h"
 
 # Project version to use to build icu (changing this may break the build)
