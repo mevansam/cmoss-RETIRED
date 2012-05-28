@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "libgpg-error-${LIBGPG_ERROR_VERSION}"
-tar zxvf "libgpg-error-${LIBGPG_ERROR_VERSION}.tar.bz2"
+tar xvjf "libgpg-error-${LIBGPG_ERROR_VERSION}.tar.bz2"
 
 # Build
 pushd "libgpg-error-${LIBGPG_ERROR_VERSION}"
