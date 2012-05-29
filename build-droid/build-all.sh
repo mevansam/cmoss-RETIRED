@@ -191,7 +191,7 @@ do
 done
 
 mkdir -p ${BINDIR}/include
-cp -r ${TMPDIR}/build/droid/arm-linux-androideabi/include/ ${BINDIR}/include
+cp -r ${TMPDIR}/build/droid/arm-linux-androideabi/include ${BINDIR}/
 
 #mkdir -p ${BINDIR}/lib/x86
 mkdir -p ${BINDIR}/lib/armv7

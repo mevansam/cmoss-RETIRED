@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "libgcrypt-${LIBGCRYPT_VERSION}"
-tar zxvf "libgcrypt-${LIBGCRYPT_VERSION}.tar.bz2"
+tar xvjf "libgcrypt-${LIBGCRYPT_VERSION}.tar.bz2"
 
 # Build
 pushd "libgcrypt-${LIBGCRYPT_VERSION}"
