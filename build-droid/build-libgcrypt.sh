@@ -34,11 +34,7 @@ fi
 
 # Extract source
 rm -rf "libgcrypt-${LIBGCRYPT_VERSION}"
-<<<<<<< HEAD
 tar xvjf "libgcrypt-${LIBGCRYPT_VERSION}.tar.bz2"
-=======
-tar xvf "libgcrypt-${LIBGCRYPT_VERSION}.tar.bz2"
->>>>>>> removed invalid option 'z' passed to tar command
 
 # Build
 pushd "libgcrypt-${LIBGCRYPT_VERSION}"
