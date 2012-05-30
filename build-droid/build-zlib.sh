@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "zlib-${ZLIB_VERSION}"
-tar zxvf "zlib-${ZLIB_VERSION}.tar.gz"
+tar xvf "zlib-${ZLIB_VERSION}.tar.gz"
 cp ${TOPDIR}/build-droid/Makefile.zlib zlib-${ZLIB_VERSION}/Makefile.in
 
 # Build

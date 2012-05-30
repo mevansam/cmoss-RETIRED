@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf *-sqlcipher-*
-tar zxvf "sqlcipher-${SQLCIPHER_VERSION}.tar.gz"
+tar xvf "sqlcipher-${SQLCIPHER_VERSION}.tar.gz"
 
 # Build
 pushd *-sqlcipher-*

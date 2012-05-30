@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "openssl-${OPENSSL_VERSION}"
-tar zxvf "openssl-${OPENSSL_VERSION}.tar.gz"
+tar xvf "openssl-${OPENSSL_VERSION}.tar.gz"
 
 # Build
 pushd "openssl-${OPENSSL_VERSION}"

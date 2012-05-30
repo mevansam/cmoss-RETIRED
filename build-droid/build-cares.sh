@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "c-ares-${CARES_VERSION}"
-tar zxvf "c-ares-${CARES_VERSION}.tar.gz"
+tar xvf "c-ares-${CARES_VERSION}.tar.gz"
 
 # Build
 pushd "c-ares-${CARES_VERSION}"

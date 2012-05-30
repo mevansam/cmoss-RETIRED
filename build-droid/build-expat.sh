@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "expat-${EXPAT_VERSION}"
-tar zxvf "expat-${EXPAT_VERSION}.tar.gz"
+tar xvf "expat-${EXPAT_VERSION}.tar.gz"
 
 # Build
 pushd "expat-${EXPAT_VERSION}"

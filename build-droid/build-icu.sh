@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "icu"
-tar zxvf "icu4c-${ICU_VERSION//./_}-src.tgz"
+tar xvf "icu4c-${ICU_VERSION//./_}-src.tgz"
 
 # Build
 
@@ -48,7 +48,7 @@ popd
 
 pushd "icu/source"
 
-tar zxvf "${TOPDIR}/build-droid/droid-icu-patch.tar.gz"
+tar xvf "${TOPDIR}/build-droid/droid-icu-patch.tar.gz"
 
 # Apply patches to icu
 PATCHES_DIR=${TMPDIR}/icu/source/droid-icu-patch
