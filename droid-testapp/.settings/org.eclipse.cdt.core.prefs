@@ -1,0 +1,7 @@
+#Tue Mar 27 22:09:49 EDT 2012
+eclipse.preferences.version=1
+environment/project/com.android.toolchain.gcc.1014137256/PATH/delimiter=\:
+environment/project/com.android.toolchain.gcc.1014137256/PATH/operation=replace
+environment/project/com.android.toolchain.gcc.1014137256/PATH/value=${NDK_PATH}\:${NDK_PATH}/platforms/android-14/arch-arm/usr/include\:/usr/bin\:/bin\:/usr/sbin\:/sbin
+environment/project/com.android.toolchain.gcc.1014137256/append=true
+environment/project/com.android.toolchain.gcc.1014137256/appendContributed=true

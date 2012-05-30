@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="test_cURL">Testing cURL...</string>
+    <string name="test_expat">Testing expat...</string>
+    <string name="test_yajl">Testing yajl...</string>
+    <string name="test_sql">Testing soci/sqlcipher...</string>
+    
+    <string name="app_name">CMOSS - Tests</string>
+    
+</resources>
