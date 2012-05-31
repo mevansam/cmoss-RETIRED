@@ -35,7 +35,7 @@ fi
 
 # Extract source
 rm -rf "libgsasl-${LIBGSASL_VERSION}"
-tar zxvf "libgsasl-${LIBGSASL_VERSION}.tar.gz"
+tar xvf "libgsasl-${LIBGSASL_VERSION}.tar.gz"
 
 # Build
 pushd "libgsasl-${LIBGSASL_VERSION}"

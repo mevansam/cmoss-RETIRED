@@ -35,7 +35,7 @@ fi
 
 # Extract source
 rm -rf "libidn-${LIBIDN_VERSION}"
-tar zxvf "libidn-${LIBIDN_VERSION}.tar.gz"
+tar xvf "libidn-${LIBIDN_VERSION}.tar.gz"
 
 cp ${TOPDIR}/build-droid/idn-int.h "libidn-${LIBIDN_VERSION}/lib/"
 
