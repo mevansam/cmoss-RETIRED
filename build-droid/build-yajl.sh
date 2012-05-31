@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf lloyd-yajl-*
-tar zxvf "yajl-${YAJL_VERSION}.tar.gz"
+tar xvf "yajl-${YAJL_VERSION}.tar.gz"
 
 # Build
 pushd lloyd-yajl-*

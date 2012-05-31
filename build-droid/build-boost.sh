@@ -43,10 +43,10 @@ fi
 
 # Extract source
 rm -rf "${BOOST_SOURCE_NAME}"
-tar zxvf "${BOOST_SOURCE_NAME}.tar.gz"
+tar xvf "${BOOST_SOURCE_NAME}.tar.gz"
 
 pushd "${BOOST_SOURCE_NAME}"
-tar zxvf "${TOPDIR}/build-droid/droid-boost-patch.tar.gz"
+tar xvf "${TOPDIR}/build-droid/droid-boost-patch.tar.gz"
 
 # Build
 

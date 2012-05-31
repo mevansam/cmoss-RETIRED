@@ -34,7 +34,11 @@ fi
 
 # Extract source
 rm -rf "libgpg-error-${LIBGPG_ERROR_VERSION}"
+<<<<<<< HEAD
 tar xvjf "libgpg-error-${LIBGPG_ERROR_VERSION}.tar.bz2"
+=======
+tar xvf "libgpg-error-${LIBGPG_ERROR_VERSION}.tar.bz2"
+>>>>>>> removed invalid option 'z' passed to tar command
 
 # Build
 pushd "libgpg-error-${LIBGPG_ERROR_VERSION}"

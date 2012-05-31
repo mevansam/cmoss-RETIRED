@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "curl-${CURL_VERSION}"
-tar zxvf "curl-${CURL_VERSION}.tar.gz"
+tar xvf "curl-${CURL_VERSION}.tar.gz"
 
 # Build
 pushd "curl-${CURL_VERSION}"
@@ -59,7 +59,11 @@ export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
 #./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-ssl=${ROOTDIR} --enable-ares=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --enable-optimize --enable-nonblocking --disable-verbose --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-manual --disable-ipv6 --disable-soname-bump --without-polarssl --without-gnutls --without-cyassl --without-axtls
+
 #./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-ssl=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --enable-optimize --enable-nonblocking --disable-ares --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-ipv6 --disable-soname-bump --without-polarssl --without-gnutls --without-cyassl --without-axtls --disable-manual --disable-verbose
+
+#./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-ssl=${ROOTDIR} --with-random=/dev/urandom --enable-optimize --enable-nonblocking --enable-verbose --disable-ares --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-ipv6 --disable-soname-bump --without-polarssl --without-gnutls --without-cyassl --without-axtls --without-libssh2 --disable-manual
+
 ./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-ssl=${ROOTDIR} --with-random=/dev/urandom --enable-optimize --enable-nonblocking --disable-ares --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-ipv6 --disable-soname-bump --without-polarssl --without-gnutls --without-cyassl --without-axtls --without-libssh2 --disable-manual --disable-verbose
 
 # Fix libtool to not create versioned shared libraries

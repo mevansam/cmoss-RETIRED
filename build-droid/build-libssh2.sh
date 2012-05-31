@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "libssh2-${LIBSSH2_VERSION}"
-tar zxvf "libssh2-${LIBSSH2_VERSION}.tar.gz"
+tar xvf "libssh2-${LIBSSH2_VERSION}.tar.gz"
 
 # Build
 pushd "libssh2-${LIBSSH2_VERSION}"

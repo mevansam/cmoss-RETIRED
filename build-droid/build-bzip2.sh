@@ -34,7 +34,7 @@ fi
 
 # Extract source
 rm -rf "bzip2-${BZIP2_VERSION}"
-tar zxvf "bzip2-${BZIP2_VERSION}.tar.gz"
+tar xvf "bzip2-${BZIP2_VERSION}.tar.gz"
 cp ${TOPDIR}/build-droid/Makefile.bzip2 bzip2-${BZIP2_VERSION}/Makefile
 
 # Build

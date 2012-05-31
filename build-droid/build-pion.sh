@@ -34,12 +34,12 @@ fi
 
 # Extract source
 rm -fr "pion-net-${PION_VERSION}"
-tar zxvf "pion-net-${PION_VERSION}.tar.gz"
+tar xvf "pion-net-${PION_VERSION}.tar.gz"
 
 # Build
 pushd "pion-net-${PION_VERSION}"
 
-tar zxvf "${TOPDIR}/build-droid/droid-pion-patch.tar.gz"
+tar xvf "${TOPDIR}/build-droid/droid-pion-patch.tar.gz"
 
 # Apply patches to icu
 PATCHES_DIR=${TMPDIR}/pion-net-${PION_VERSION}/droid-pion-patch
