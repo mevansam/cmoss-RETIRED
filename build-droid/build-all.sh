@@ -23,13 +23,16 @@ export ZLIB_VERSION="1.2.7"
 export MINIZIP_VERSION="101h"
 
 # Project version to use to build icu (changing this may break the build)
-export ICU_VERSION=4.8.1.1
+export ICU_VERSION="4.8.1.1"
 
 # Project version to use to build c-ares (changing this may break the build)
 export CARES_VERSION="1.7.5"
 
 # Project version to use to build bzip2 (changing this may break the build)
 export BZIP2_VERSION="1.0.6"
+
+# Project version to use to build libidn (changing this may break the build)
+export LIBIDN_VERSION="1.24"
 
 # GNU Crypto libraries
 export LIBGPG_ERROR_VERSION="1.10"
@@ -43,6 +46,12 @@ export OPENSSL_VERSION="1.0.0f"
 export LIBSSH2_VERSION="1.3.0"
 export CURL_VERSION="7.24.0"
 
+# Project Version to use to build libgsasl
+export LIBGSASL_VERSION="1.6.1"
+
+# Project version to use to build boost C++ libraries
+export BOOST_VERSION="1.49.0"
+
 # Project version to use to build expat (changing this may break the build)
 export EXPAT_VERSION="2.0.1"
 
@@ -55,11 +64,8 @@ export SQLCIPHER_VERSION="2.0.3"
 # Project versions to use for SOCI (Sqlite3 C++ database library)
 export SOCI_VERSION="3.1.0"
 
-# Project version to use to build boost C++ libraries
-export BOOST_VERSION=1.49.0
-
 # Project version to use to build pion (changing this may break the build)
-export PION_VERSION=4.0.11
+export PION_VERSION="4.0.11"
 
 # Create dist folder
 BUILDDIR=$(dirname $0)
@@ -78,6 +84,7 @@ mkdir -p $TMPDIR
 pushd $TMPDIR
 
 ANDROID_API_LEVEL="14"
+ARM_TARGET="armv7"
 TOOLCHAIN_VERSION="4.4.3"
 
 # Platforms to build for (changing this may break the build)
@@ -116,7 +123,7 @@ do
 
 	if [ "${PLATFORM}" == "arm-linux-androideabi" ]
 	then
-		export ARCH="armv7"
+		export ARCH=${ARM_TARGET}
 	else
 		export ARCH="x86"
 	fi
@@ -141,6 +148,9 @@ do
 	# Build bzip2
 	${TOPDIR}/build-droid/build-bzip2.sh > "${LOGPATH}-bzip2.log"
 
+	# Build libidn (before curl and gsasl)
+	${TOPDIR}/build-droid/build-libidn.sh > "${LOGPATH}-libidn.log"
+
 	# Build libgpg-error
 	${TOPDIR}/build-droid/build-libgpg-error.sh > "${LOGPATH}-libgpg-error.log"
 
@@ -159,6 +169,12 @@ do
 	# Build cURL
 	${TOPDIR}/build-droid/build-cURL.sh > "${LOGPATH}-cURL.log"
 
+	# Build libgsasl
+	${TOPDIR}/build-droid/build-libgsasl.sh > "${LOGPATH}-libgsasl.log"
+
+	# Build BOOST
+	${TOPDIR}/build-droid/build-boost.sh > "${LOGPATH}-boost.log"
+
 	# Build expat
 	${TOPDIR}/build-droid/build-expat.sh > "${LOGPATH}-expat.log"
 
@@ -170,9 +186,6 @@ do
 
 	# Build SOCI
 	${TOPDIR}/build-droid/build-soci.sh > "${LOGPATH}-soci.log"
-
-	# Build BOOST
-	${TOPDIR}/build-droid/build-boost.sh > "${LOGPATH}-boost.log"
 
 	# Build PION
 	${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
@@ -194,7 +207,7 @@ mkdir -p ${BINDIR}/include
 cp -r ${TMPDIR}/build/droid/arm-linux-androideabi/include ${BINDIR}/
 
 #mkdir -p ${BINDIR}/lib/x86
-mkdir -p ${BINDIR}/lib/armv7
+mkdir -p ${BINDIR}/lib/${ARM_TARGET}
 
 #cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/x86
 #cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.la ${BINDIR}/lib/x86
@@ -202,11 +215,11 @@ mkdir -p ${BINDIR}/lib/armv7
 #(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
 #(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
 
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.a ${BINDIR}/lib/armv7
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.la ${BINDIR}/lib/armv7
+cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.a ${BINDIR}/lib/${ARM_TARGET}
+cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.la ${BINDIR}/lib/${ARM_TARGET}
 
-(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/armv7 && tar xfB - )
-#(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/armv7 && tar xfB - )
+(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
+#(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
 
 echo "**** Android c/c++ open source build completed ****"
 
