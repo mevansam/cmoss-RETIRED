@@ -52,6 +52,10 @@ export LIBGSASL_VERSION="1.6.1"
 # Project version to use to build boost C++ libraries
 export BOOST_VERSION="1.49.0"
 
+# Project version to use to build tinyxml
+export TINYXML_VERSION="2.6.2"
+export TINYXML_FILE="2_6_2"
+
 # Project version to use to build expat (changing this may break the build)
 export EXPAT_VERSION="2.0.1"
 
@@ -174,6 +178,9 @@ do
 
 	# Build BOOST
 	${TOPDIR}/build-droid/build-boost.sh > "${LOGPATH}-boost.log"
+
+	# Build tinyxml
+	${TOPDIR}/build-droid/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
 
 	# Build expat
 	${TOPDIR}/build-droid/build-expat.sh > "${LOGPATH}-expat.log"
