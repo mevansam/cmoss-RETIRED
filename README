@@ -28,7 +28,7 @@ cd [cmoss root path]/build-ios
 
 To run Android build:
 
-cd [cmoss root path]/build-ios
+cd [cmoss root path]/build-droid
 ./build-all.sh [path to Android NDK] [proxy_host:proxy_port]
 
 (scripts were tested with Android NDK r7)
