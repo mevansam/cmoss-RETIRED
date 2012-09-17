@@ -73,7 +73,7 @@ cat > ${BINDIR}/openssl_certs.h <<EOF
 
 EOF
 
-cat ${CERTS_ZIP} | ( echo "unsigned char _certsZipBinaryData[] = {"; xxd -i; echo "};" ) >> ${BINDIR}/openssl_certs.h
+cat ${CERTS_ZIP} | ( echo "static unsigned char _certsZipBinaryData[] = {"; xxd -i; echo "};" ) >> ${BINDIR}/openssl_certs.h
 
 cat >> ${BINDIR}/openssl_certs.h <<EOF
 
@@ -84,8 +84,8 @@ cat >> ${BINDIR}/openssl_certs.h <<EOF
 extern int errno;
 #endif
 
-char __CERTS_PATH[MAXFILENAMELEN];
-char __CACERTS_PATH[MAXFILENAMELEN];
+static char __CERTS_PATH[MAXFILENAMELEN];
+static char __CACERTS_PATH[MAXFILENAMELEN];
 
 #ifdef __cplusplus
 inline int extractCerts(const char* path)
@@ -102,12 +102,12 @@ inline static int extractCerts(const char* path)
     struct utimbuf ut;
 
     struct tm zipTimestamp;
-    zipTimestamp.tm_mon = $(date '+%m') - 1;
-    zipTimestamp.tm_mday = $(date '+%d');
-    zipTimestamp.tm_year = $(date '+%Y') - 1900;
-	zipTimestamp.tm_hour = $(date '+%H');
-    zipTimestamp.tm_min = $(date '+%M');
-    zipTimestamp.tm_sec = $(date '+%S');
+    zipTimestamp.tm_mon = atoi("$(date '+%m')") - 1;
+    zipTimestamp.tm_mday = atoi("$(date '+%d')");
+    zipTimestamp.tm_year = atoi("$(date '+%Y')") - 1900;
+    zipTimestamp.tm_hour = atoi("$(date '+%H')");
+    zipTimestamp.tm_min = atoi("$(date '+%M')");
+    zipTimestamp.tm_sec = atoi("$(date '+%S')");
     zipTimestamp.tm_isdst = -1;
 
     ut.actime = ut.modtime = mktime(&zipTimestamp);
