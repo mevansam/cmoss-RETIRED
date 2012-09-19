@@ -50,7 +50,7 @@ export SQLCIPHER_VERSION="2.0.3"
 export SOCI_VERSION="3.1.0"
 
 # Project version to use to build boost C++ libraries
-export BOOST_VERSION=1.48.0
+export BOOST_VERSION=1.49.0
 
 # Create dist folder
 BUILDDIR=$(dirname $0)
@@ -71,8 +71,11 @@ pushd ${TMPDIR}
 # Platforms to build for (changing this may break the build)
 PLATFORMS="iPhoneSimulator iPhoneOS-V6 iPhoneOS-V7"
 
-# Build projects
+# Location of SDK
 DEVELOPER=`xcode-select --print-path`
+export DEVELOPER="${DEVELOPER}"
+
+# Build projects
 for PLATFORM in ${PLATFORMS}
 do
 	LOGPATH="${LOGDIR}/${PLATFORM}-${SDK}"
@@ -91,7 +94,6 @@ do
 	rm -rf "${ROOTDIR}"
 	mkdir -p "${ROOTDIR}"
 
-	export DEVELOPER="${DEVELOPER}"
 	export ROOTDIR="${ROOTDIR}"
 	export PLATFORM="${PLATFORM}"
 	export ARCH="${ARCH}"
@@ -151,7 +153,7 @@ ${TOPDIR}/build-ios/build-boost.sh > "${LOGDIR}/boost.log"
 
 # Create Lipo Archives and Framework bundle
 
-DEVROOT=/Developer/Platforms/iPhoneOS.platform/Developer
+DEVROOT=${DEVELOPER}/Platforms/iPhoneOS.platform/Developer
 
 VERSION_TYPE=Release
 FRAMEWORK_NAME=CMOSS
@@ -180,9 +182,9 @@ for a in $(cat $BINDIR/libs | sort | uniq); do
 	do
 		if [ "${PLATFORM}" == "iPhoneSimulator" ]
 		then
-			AR="/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/ar"
+			AR="${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/usr/bin/ar"
 		else
-			AR="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/ar"
+			AR="${DEVELOPER}/Platforms/iPhoneOS.platform/Developer/usr/bin/ar"
 		fi
 		(cd $TMPDIR/build/ios/${PLATFORM}-${SDK}/obj; $AR -x $TMPDIR/build/ios/${PLATFORM}-${SDK}/lib/$a );
 	done
@@ -199,9 +201,9 @@ for PLATFORM in ${PLATFORMS}
 do
 	if [ "${PLATFORM}" == "iPhoneSimulator" ]
 	then
-		AR="/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/ar"
+		AR="${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/usr/bin/ar"
 	else
-		AR="/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/ar"
+		AR="${DEVELOPER}/Platforms/iPhoneOS.platform/Developer/usr/bin/ar"
 	fi
 	echo ...$PLATFORM
 	(cd $TMPDIR/build/ios/${PLATFORM}-${SDK}/obj; $AR crus $TMPDIR/build/ios/${PLATFORM}-${SDK}/lib/${FRAMEWORK_NAME}.a *.o; )

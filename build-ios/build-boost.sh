@@ -79,8 +79,8 @@ BOOST_SRC=$SRCDIR/${BOOST_SOURCE_NAME}
 
 #===============================================================================
 
-ARM_DEV_DIR=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/
-SIM_DEV_DIR=/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/
+ARM_DEV_DIR=${DEVELOPER}/Platforms/iPhoneOS.platform/Developer/usr/bin/
+SIM_DEV_DIR=${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/usr/bin/
 
 ARM_COMBINED_LIB=$BUILDDIR/lib_boost_arm.a
 SIM_COMBINED_LIB=$BUILDDIR/lib_boost_x86.a
@@ -147,12 +147,12 @@ writeBjamUserConfig()
     #cat > ~/user-config.jam <<EOF
     cat >> $BOOST_SRC/tools/build/v2/user-config.jam <<EOF
 using darwin : ${SDK}~iphone
-   : /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc-4.2 -arch armv7 -mthumb -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
+   : ${DEVELOPER}/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc -arch armv7 -mthumb -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
    : <striper>
    : <architecture>arm <target-os>iphone
    ;
 using darwin : ${SDK}~iphonesim
-   : /Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.2 -arch i386 -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
+   : ${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc -arch i386 -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
    : <striper>
    : <architecture>x86 <target-os>iphone
    ;
@@ -168,7 +168,7 @@ inventMissingHeaders()
     # They are supported on the device, so we copy them from x86 SDK to a staging area
     # to use them on ARM, too.
     echo Invent missing headers
-    cp /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${IPHONE_SDKVERSION}.sdk/usr/include/{crt_externs,bzlib}.h $BOOST_SRC
+    cp ${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${IPHONE_SDKVERSION}.sdk/usr/include/{crt_externs,bzlib}.h $BOOST_SRC
 }
 
 #===============================================================================

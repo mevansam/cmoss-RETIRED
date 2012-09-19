@@ -38,16 +38,44 @@ tar zxvf "libgcrypt-${LIBGCRYPT_VERSION}.tar.bz2"
 
 # Build
 pushd "libgcrypt-${LIBGCRYPT_VERSION}"
+
+tar xvf "${TOPDIR}/build-ios/ios-libgcrypt-patch.tar.gz"
+
+# Apply patches to libgcrypt
+PATCHES_DIR=${TMPDIR}/libgcrypt-${LIBGCRYPT_VERSION}/ios-libgcrypt-patch
+if [ ! -d "$PATCHES_DIR" ] ; then
+	echo "ERROR: Could not locate ios build patch files."
+	exit 1
+fi
+
+PATCHES=`(cd $PATCHES_DIR && find . -name "*.patch" | sort) 2> /dev/null`
+if [ -z "$PATCHES" ] ; then
+	echo "No patches files in $PATCHES_DIR"
+else
+	PATCHES=`echo $PATCHES | sed -e s%^\./%%g`
+	SRC_DIR=${TMPDIR}/icu/source
+	for PATCH in $PATCHES; do
+		PATCHDIR=`dirname $PATCH`
+		PATCHNAME=`basename $PATCH`
+		echo "Applying $PATCHNAME into $SRC_DIR/$PATCHDIR"
+		patch -p1 < $PATCHES_DIR/$PATCH
+		if [ $? != 0 ] ; then
+			dump "ERROR: Patch failure !! Please check your patches directory! Try to perform a clean build using --clean"
+			exit 1
+		fi
+	done
+fi
+
 export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
 export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${SDK}.sdk"
 export CC=${DEVROOT}/usr/bin/gcc
 export LD=${DEVROOT}/usr/bin/ld
-export CPP=${DEVROOT}/usr/bin/cpp
+#export CPP=${DEVROOT}/usr/bin/cpp
 export CXX=${DEVROOT}/usr/bin/g++
 export AR=${DEVROOT}/usr/bin/ar
 export AS=${DEVROOT}/usr/bin/as
 export NM=${DEVROOT}/usr/bin/nm
-export CXXCPP=$DEVROOT/usr/bin/cpp
+#export CXXCPP=$DEVROOT/usr/bin/cpp
 export RANLIB=$DEVROOT/usr/bin/ranlib
 export LDFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -L${ROOTDIR}/lib"
 export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -I${ROOTDIR}/include"
