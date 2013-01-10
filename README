@@ -1,9 +1,10 @@
 The CMOSS scripts can be used to build the following C/C++ Open Source Software libraries for native development on iOS and Android.
 
+* minizip : http://www.winimage.com/zLibDll/minizip.html
+* icu : http://site.icu-project.org/
 * c-ares : http://c-ares.haxx.se
 * bzip2 : http://bzip.org/
-* zip : http://zlib.net
-* icu : http://site.icu-project.org/
+* libidn : http://www.gnu.org/software/libidn/
 * GnuPG 1.4.x, Libgcrypt, Libgpg-error : http://www.gnupg.org/
 * OpenSSL - http://http://www.openssl.org/
 * libSSH2 - http://www.libssh2.org/
@@ -15,7 +16,9 @@ The CMOSS scripts can be used to build the following C/C++ Open Source Software 
 * soci - http://soci.sourceforge.net/ - generic C++ database API
 * pion : http://pion.org/ - C++ HTTP API
 
-The android kernel already provides some of these shared libraries so check if they are available before including them in your NDK project. For example zlib is part of both Android and IOS distributions and is provided only as an aid in linking, and both openssl and icu are part of the Android distribution.
+The android kernel already provides some of these shared libraries so check if they are available before including them in your NDK project. For example both openssl and icu are part of the Android distribution. The Pion libraries have been temporarily commented for Android as I have been unable to resolve the build issues with the latest distribution in GitHub.
+
+To build armv6 binaries for iOS you need to use the 5.1 SDK or lower. The blog at http://blog.chpwn.com/post/31824877081 provides instructions on how add the 5.1 SDK alongside the 6.0 SDK if you are using XCode 4.5. The scripts will automatically pick up the older SDK for armv6 builds. If the 5.1 SDK is not available then armv6 binaries will not be built.
 
 The scripts will download the source code from the internet and build them locally. So your build machine needs to be connected to the internet when building. Once the source code archives have been downloaded they will be saved in the [cmoss root path]/tmp folder and will not be downloaded again unless you delete them or change the version. The builds have been tested with the versions hard-coded in the script files. If you change these versions it is possible the build for that library may break. If you do find a new version that breaks a build please let me know so it can be fixed.
 
@@ -24,14 +27,14 @@ To run iOS build:
 cd [cmoss root path]/build-ios
 ./build-all.sh [installed sdk version #] [proxy_host:proxy_port]
 
-(scripts were tested with SDK 4.3)
+(scripts were tested with SDK 6.0)
 
 To run Android build:
 
 cd [cmoss root path]/build-droid
 ./build-all.sh [path to Android NDK] [proxy_host:proxy_port]
 
-(scripts were tested with Android NDK r7)
+(scripts were tested with Android NDK r8d)
 
 These build scripts were tested on a Mac OS X 10 with the following Mac ports:
 
