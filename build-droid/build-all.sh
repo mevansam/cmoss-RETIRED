@@ -18,39 +18,39 @@ else
 	export PROXY="-x $2"
 fi
 
-# Project version to use to build zlib (changing this may break the build)
-export ZLIB_VERSION="1.2.7"
-export MINIZIP_VERSION="101h"
+# Project version to use to build minizip (changing this may break the build)
+export MINIZIP_VERSION="11"
 
 # Project version to use to build icu (changing this may break the build)
-export ICU_VERSION="4.8.1.1"
+#export ICU_VERSION="4.8.1.1"
+export ICU_VERSION="50.1.1"
 
 # Project version to use to build c-ares (changing this may break the build)
-export CARES_VERSION="1.7.5"
+export CARES_VERSION="1.9.1"
 
 # Project version to use to build bzip2 (changing this may break the build)
 export BZIP2_VERSION="1.0.6"
 
 # Project version to use to build libidn (changing this may break the build)
-export LIBIDN_VERSION="1.24"
+export LIBIDN_VERSION="1.26"
 
 # GNU Crypto libraries
 export LIBGPG_ERROR_VERSION="1.10"
 export LIBGCRYPT_VERSION="1.5.0"
-export GNUPG_VERSION="1.4.11"
+export GNUPG_VERSION="1.4.13"
 
 # Project versions to use to build openssl (changing this may break the build)
-export OPENSSL_VERSION="1.0.0f"
+export OPENSSL_VERSION="1.0.1"
 
 # Project versions to use to build libssh2 and cURL (changing this may break the build)
 export LIBSSH2_VERSION="1.3.0"
-export CURL_VERSION="7.24.0"
+export CURL_VERSION="7.28.1"
 
 # Project Version to use to build libgsasl
-export LIBGSASL_VERSION="1.6.1"
+export LIBGSASL_VERSION="1.8.0"
 
 # Project version to use to build boost C++ libraries
-export BOOST_VERSION="1.49.0"
+export BOOST_VERSION="1.52.0"
 
 # Project version to use to build tinyxml
 export TINYXML_VERSION="2.6.2"
@@ -62,14 +62,14 @@ export EXPAT_VERSION="2.0.1"
 # Project version to use to build yajl (changing this may break the build)
 export YAJL_VERSION="2.0.1"
 
-# Project version to use to build sqlcipher
-export SQLCIPHER_VERSION="2.0.3"
+# Project version to use to build sqlcipher (changing this may break the build)
+export SQLCIPHER_VERSION="2.1.1"
 
 # Project versions to use for SOCI (Sqlite3 C++ database library)
 export SOCI_VERSION="3.1.0"
 
 # Project version to use to build pion (changing this may break the build)
-export PION_VERSION="4.0.11"
+export PION_VERSION="master"
 
 # Create dist folder
 BUILDDIR=$(dirname $0)
@@ -87,12 +87,11 @@ mkdir -p $TMPDIR
 
 pushd $TMPDIR
 
-ANDROID_API_LEVEL="14"
-ARM_TARGET="armv7"
-TOOLCHAIN_VERSION="4.4.3"
+export ANDROID_API_LEVEL="14"
+export ARM_TARGET="armv7"
+export TOOLCHAIN_VERSION="4.7"
 
 # Platforms to build for (changing this may break the build)
-#PLATFORMS="i686-android-linux arm-linux-androideabi"
 PLATFORMS="arm-linux-androideabi"
 
 # Create tool chains for each supported platform
@@ -100,19 +99,12 @@ for PLATFORM in ${PLATFORMS}
 do
 	echo "Creating toolchain for platform ${PLATFORM}..."
 
-	if [ "${PLATFORM}" == "arm-linux-androideabi" ]
-	then
-		export TC_PLATFORM=${PLATFORM}
-	else
-		export TC_PLATFORM="x86"
-	fi
-
 	if [ ! -d "${TMPDIR}/droidtoolchains/${PLATFORM}" ]
 	then
 		$NDK/build/tools/make-standalone-toolchain.sh \
 			--verbose \
 			--platform=android-${ANDROID_API_LEVEL} \
-			--toolchain=${TC_PLATFORM}-${TOOLCHAIN_VERSION} \
+			--toolchain=${PLATFORM}-${TOOLCHAIN_VERSION} \
 			--install-dir=${TMPDIR}/droidtoolchains/${PLATFORM}
 	fi
 done
@@ -136,9 +128,6 @@ do
 	export PLATFORM=${PLATFORM}
 	export DROIDTOOLS=${TMPDIR}/droidtoolchains/${PLATFORM}/bin/${PLATFORM}
 	export SYSROOT=${TMPDIR}/droidtoolchains/${PLATFORM}/sysroot
-
-	# Build zlib
-	${TOPDIR}/build-droid/build-zlib.sh > "${LOGPATH}-zlib.log"
 
 	# Build minizip
 	${TOPDIR}/build-droid/build-minizip.sh > "${LOGPATH}-minizip.log"
@@ -195,7 +184,7 @@ do
 	${TOPDIR}/build-droid/build-soci.sh > "${LOGPATH}-soci.log"
 
 	# Build PION
-	${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
+	#${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
 
 	# Remove junk
 	rm -rf "${ROOTDIR}/bin"

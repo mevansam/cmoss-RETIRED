@@ -35,22 +35,14 @@ fi
 # Extract source
 rm -rf "openssl-${OPENSSL_VERSION}"
 tar zxvf "openssl-${OPENSSL_VERSION}.tar.gz"
+pushd "openssl-${OPENSSL_VERSION}"
 
 # Build
-pushd "openssl-${OPENSSL_VERSION}"
+export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -dynamiclib"
+export CFLAGS="-Os -D_DARWIN_C_SOURCE -UOPENSSL_BN_ASM_PART_WORDS -arch ${ARCH} -isysroot ${SDKROOT}"
+
 ./config no-shared no-asm no-krb5 no-gost zlib --openssldir=${ROOTDIR}
-CC="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/usr/bin/gcc"
-CFLAGS="-Os -D_DARWIN_C_SOURCE -UOPENSSL_BN_ASM_PART_WORDS -arch ${ARCH} -isysroot ${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/SDKs/${PLATFORM}${SDK}.sdk"
-LDFLAGS="-Os -arch ${ARCH} -dynamiclib"
-if [ "${SDK}" == "3.2" ]
-then
-  if [ "${PLATFORM}" == "iPhoneSimulator" ]
-  then
-    # Work around linker error "ld: library not found for -lcrt1.10.6.o" on iPhone Simulator 3.2
-    CFLAGS="${CFLAGS} -mmacosx-version-min=10.5"
-    LDFLAGS="${LDFLAGS} -mmacosx-version-min=10.5"
-  fi
-fi
+
 make CC="${CC}" CFLAG="${CFLAGS}" SHARED_LDFLAGS="${LDFLAGS}"
 make install
 popd

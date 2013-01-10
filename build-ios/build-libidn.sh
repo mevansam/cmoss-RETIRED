@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
+# Changes for libidn Copyright (c) 2012, Lothar May
 # Copyright (c) 2010, Pierre-Olivier Latour
 # All rights reserved.
 #
@@ -27,26 +28,27 @@ set -e
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Download source
-if [ ! -e "libssh2-${LIBSSH2_VERSION}.tar.gz" ]
+if [ ! -e "libidn-${LIBIDN_VERSION}.tar.gz" ]
 then
-  curl $PROXY -O "http://www.libssh2.org/download/libssh2-${LIBSSH2_VERSION}.tar.gz"
+  curl $PROXY -O "ftp://ftp.gnu.org/gnu/libidn/libidn-${LIBIDN_VERSION}.tar.gz"
 fi
 
 # Extract source
-rm -rf "libssh2-${LIBSSH2_VERSION}"
-tar zxvf "libssh2-${LIBSSH2_VERSION}.tar.gz"
-pushd "libssh2-${LIBSSH2_VERSION}"
+rm -rf "libidn-${LIBIDN_VERSION}"
+tar xvf "libidn-${LIBIDN_VERSION}.tar.gz"
+pushd "libidn-${LIBIDN_VERSION}"
 
 # Build
 export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
+export CFLAGS="-Os -arch ${ARCH} -pipe -isysroot ${SDKROOT} -miphoneos-version-min=2.2 ${ICU_FLAGS} -I${ROOTDIR}/include"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-libgcrypt --with-libgcrypt-prefix=${ROOTDIR} --with-libz --with-libz-prefix=-${ROOTDIR} -with-openssl --with-libssl-prefix=${ROOTDIR} --disable-shared --enable-static
+./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --enable-static --disable-shared
+
 make
 make install
 popd
 
 # Clean up
-rm -rf "libssh2-${LIBSSH2_VERSION}"
+rm -rf "libidn-${LIBIDN_VERSION}"

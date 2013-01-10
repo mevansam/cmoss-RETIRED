@@ -19,23 +19,42 @@ else
 	export PROXY="-x $2"
 fi
 
+# Project version to use to build minizip (changing this may break the build)
+export MINIZIP_VERSION="11"
+
+# Project version to use to build icu (changing this may break the build)
+export ICU_VERSION="50.1.1"
+
 # Project version to use to build c-ares (changing this may break the build)
-export CARES_VERSION="1.7.5"
+export CARES_VERSION="1.9.1"
 
 # Project version to use to build bzip2 (changing this may break the build)
 export BZIP2_VERSION="1.0.6"
 
+# Project version to use to build libidn (changing this may break the build)
+export LIBIDN_VERSION="1.26"
+
 # GNU Crypto libraries
 export LIBGPG_ERROR_VERSION="1.10"
 export LIBGCRYPT_VERSION="1.5.0"
-export GNUPG_VERSION="1.4.11"
+export GNUPG_VERSION="1.4.13"
 
 # Project versions to use to build openssl (changing this may break the build)
-export OPENSSL_VERSION="1.0.0f"
+export OPENSSL_VERSION="1.0.1"
 
 # Project versions to use to build libssh2 and cURL (changing this may break the build)
 export LIBSSH2_VERSION="1.3.0"
-export CURL_VERSION="7.23.1"
+export CURL_VERSION="7.28.1"
+
+# Project Version to use to build libgsasl
+export LIBGSASL_VERSION="1.8.0"
+
+# Project version to use to build boost C++ libraries
+export BOOST_VERSION="1.52.0"
+
+# Project version to use to build tinyxml
+export TINYXML_VERSION="2.6.2"
+export TINYXML_FILE="2_6_2"
 
 # Project version to use to build expat (changing this may break the build)
 export EXPAT_VERSION="2.0.1"
@@ -43,14 +62,14 @@ export EXPAT_VERSION="2.0.1"
 # Project version to use to build yajl (changing this may break the build)
 export YAJL_VERSION="2.0.1"
 
-# Project version to use to build sqlcipher
-export SQLCIPHER_VERSION="2.0.3"
+# Project version to use to build sqlcipher (changing this may break the build)
+export SQLCIPHER_VERSION="2.1.1"
 
 # Project versions to use for SOCI (Sqlite3 C++ database library)
 export SOCI_VERSION="3.1.0"
 
-# Project version to use to build boost C++ libraries
-export BOOST_VERSION=1.49.0
+# Project version to use to build pion (changing this may break the build)
+export PION_VERSION="master"
 
 # Create dist folder
 BUILDDIR=$(dirname $0)
@@ -78,8 +97,20 @@ export DEVELOPER="${DEVELOPER}"
 # Build projects
 for PLATFORM in ${PLATFORMS}
 do
-	LOGPATH="${LOGDIR}/${PLATFORM}-${SDK}"
-	ROOTDIR="${TMPDIR}/build/ios/${PLATFORM}-${SDK}"
+	ROOTDIR="${TMPDIR}/build/ios/${PLATFORM}"
+	rm -rf "${ROOTDIR}"
+	mkdir -p "${ROOTDIR}"
+done
+
+# Build BOOST
+${TOPDIR}/build-ios/build-boost.sh > "${LOGDIR}/boost.log"
+
+for PLATFORM in ${PLATFORMS}
+do
+	LOGPATH="${LOGDIR}/${PLATFORM}"
+	ROOTDIR="${TMPDIR}/build/ios/${PLATFORM}"
+	CSDK=${SDK}
+
 	if [ "${PLATFORM}" == "iPhoneOS-V7" ]
 	then
 		PLATFORM="iPhoneOS"
@@ -88,21 +119,51 @@ do
 	then
 		PLATFORM="iPhoneOS"
 		ARCH="armv6"
+		HAS_SDK_SUPPORT=`echo "${SDK} < 6.0" | bc`
+
+		if [ $HAS_SDK_SUPPORT == 0 ]
+		then
+			CSDK=5.1
+		fi
 	else
 		ARCH="i386"
 	fi
-	rm -rf "${ROOTDIR}"
-	mkdir -p "${ROOTDIR}"
 
 	export ROOTDIR="${ROOTDIR}"
 	export PLATFORM="${PLATFORM}"
 	export ARCH="${ARCH}"
+
+	export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
+	export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${CSDK}.sdk"
+	if [ ! -d ${SDKROOT} ]
+	then
+		echo "WARNING! Unable to locate SDK for architecture ${ARCH}: ${SDKROOT}"
+		continue
+	fi
+
+	export CC="${DEVROOT}/usr/bin/gcc"
+	export LD="${DEVROOT}/usr/bin/ld"
+	export CXX="${DEVROOT}/usr/bin/g++"
+	export AR="${DEVROOT}/usr/bin/ar"
+	export AS="${DEVROOT}/usr/bin/as"
+	export NM="${DEVROOT}/usr/bin/nm"
+	export STRIP="${DEVROOT}/usr/bin/strip"
+	export RANLIB="${DEVROOT}/usr/bin/ranlib"
+
+	# Build minizip
+	${TOPDIR}/build-ios/build-minizip.sh > "${LOGPATH}-minizip.log"
+
+	# Build icu
+	${TOPDIR}/build-ios/build-icu.sh > "${LOGPATH}-icu.log"
 
 	# Build c-ares
 	${TOPDIR}/build-ios/build-cares.sh > "${LOGPATH}-cares.log"
 
 	# Build bzip2
 	${TOPDIR}/build-ios/build-bzip2.sh > "${LOGPATH}-bzip2.log"
+
+	# Build libidn (before curl and gsasl)
+	${TOPDIR}/build-ios/build-libidn.sh > "${LOGPATH}-libidn.log"
 
 	# Build libgpg-error
 	${TOPDIR}/build-ios/build-libgpg-error.sh > "${LOGPATH}-libgpg-error.log"
@@ -122,6 +183,12 @@ do
 	# Build cURL
 	${TOPDIR}/build-ios/build-cURL.sh > "${LOGPATH}-cURL.log"
 
+	# Build libgsasl
+	${TOPDIR}/build-ios/build-libgsasl.sh > "${LOGPATH}-libgsasl.log"
+
+	# Build tinyxml
+	${TOPDIR}/build-ios/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
+
 	# Build expat
 	${TOPDIR}/build-ios/build-expat.sh > "${LOGPATH}-expat.log"
 
@@ -133,6 +200,9 @@ do
 
 	# Build SOCI
 	${TOPDIR}/build-ios/build-soci.sh > "${LOGPATH}-soci.log"
+
+	# Build PION
+	${TOPDIR}/build-ios/build-pion.sh > "${LOGPATH}-pion.log"
 
 	# Remove junk
 	rm -rf "${ROOTDIR}/bin"
@@ -148,8 +218,9 @@ do
 
 done
 
-# Build boost
-${TOPDIR}/build-ios/build-boost.sh > "${LOGDIR}/boost.log"
+# Remove individual boost libraries as all were combined into one 
+# libboost.a (comment this line if individual libraries are required)
+find ${TMPDIR}/build/ios -name "libboost_*.*" -exec rm -f {} \;
 
 # Create Lipo Archives and Framework bundle
 
@@ -170,8 +241,8 @@ mkdir -p $BINDIR/include
 rm -f $TMPDIR/build/ios*/lib/${FRAMEWORK_NAME}.a
 for PLATFORM in ${PLATFORMS}
 do
-	rm -rf $TMPDIR/build/ios/${PLATFORM}-${SDK}/obj
-	mkdir -p $TMPDIR/build/ios/${PLATFORM}-${SDK}/obj
+	rm -rf $TMPDIR/build/ios/${PLATFORM}/obj
+	mkdir -p $TMPDIR/build/ios/${PLATFORM}/obj
 done
 
 find $TMPDIR/build/ios -name "*.a" -exec basename {} \; > $BINDIR/libs
@@ -186,11 +257,11 @@ for a in $(cat $BINDIR/libs | sort | uniq); do
 		else
 			AR="${DEVELOPER}/Platforms/iPhoneOS.platform/Developer/usr/bin/ar"
 		fi
-		(cd $TMPDIR/build/ios/${PLATFORM}-${SDK}/obj; $AR -x $TMPDIR/build/ios/${PLATFORM}-${SDK}/lib/$a );
+		(cd $TMPDIR/build/ios/${PLATFORM}/obj; $AR -x $TMPDIR/build/ios/${PLATFORM}/lib/$a );
 	done
 
 	echo Creating fat archive $BINDIR/lib/$a...
-	$DEVROOT/usr/bin/lipo -output "$BINDIR/lib/$a" -create -arch armv6 "$TMPDIR/build/ios/iPhoneOS-V6-$SDK/lib/$a" -arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7-$SDK/lib/$a" -arch i386 "$TMPDIR/build/ios/iPhoneSimulator-$SDK/lib/$a"
+	$DEVROOT/usr/bin/lipo -output "$BINDIR/lib/$a" -create -arch armv6 "$TMPDIR/build/ios/iPhoneOS-V6/lib/$a" -arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7/lib/$a" -arch i386 "$TMPDIR/build/ios/iPhoneSimulator/lib/$a"
 
 done
 rm -f $BINDIR/libs
@@ -206,10 +277,10 @@ do
 		AR="${DEVELOPER}/Platforms/iPhoneOS.platform/Developer/usr/bin/ar"
 	fi
 	echo ...$PLATFORM
-	(cd $TMPDIR/build/ios/${PLATFORM}-${SDK}/obj; $AR crus $TMPDIR/build/ios/${PLATFORM}-${SDK}/lib/${FRAMEWORK_NAME}.a *.o; )
+	(cd $TMPDIR/build/ios/${PLATFORM}/obj; $AR crus $TMPDIR/build/ios/${PLATFORM}/lib/${FRAMEWORK_NAME}.a *.o; )
 done
 
-cp -r "$TMPDIR/build/ios/iPhoneSimulator-$SDK/include" "$BINDIR"
+cp -r "$TMPDIR/build/ios/iPhoneSimulator/include" "$BINDIR"
 
 rm -rf $FRAMEWORK_BUNDLE
 
@@ -233,9 +304,9 @@ FRAMEWORK_INSTALL_NAME=$FRAMEWORK_BUNDLE/Versions/$FRAMEWORK_VERSION/$FRAMEWORK_
 echo "Lipoing library into $FRAMEWORK_INSTALL_NAME..."
     lipo \
         -create \
-        -arch armv6 "$TMPDIR/build/ios/iPhoneOS-V6-${SDK}/lib/${FRAMEWORK_NAME}.a" \
-        -arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7-${SDK}/lib/${FRAMEWORK_NAME}.a" \
-        -arch i386  "$TMPDIR/build/ios/iPhoneSimulator-${SDK}/lib/${FRAMEWORK_NAME}.a" \
+        -arch armv6 "$TMPDIR/build/ios/iPhoneOS-V6/lib/${FRAMEWORK_NAME}.a" \
+        -arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7/lib/${FRAMEWORK_NAME}.a" \
+        -arch i386  "$TMPDIR/build/ios/iPhoneSimulator/lib/${FRAMEWORK_NAME}.a" \
         -output     "$FRAMEWORK_INSTALL_NAME"
 
 echo "Framework: Copying includes..."

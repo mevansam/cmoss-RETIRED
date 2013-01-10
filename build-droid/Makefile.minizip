@@ -28,4 +28,4 @@ install : libminizip.a libminizip.so
 
 clean :
 	rm *.o
-	rm -f libminizip.so
+	rm -f libminizip.*

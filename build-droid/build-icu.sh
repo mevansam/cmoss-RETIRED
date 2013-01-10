@@ -29,7 +29,7 @@ set -e
 # Download source
 if [ ! -e "icu4c-${ICU_VERSION//./_}-src.tgz" ]
 then
-	curl $PROXY -O "http://download.icu-project.org/files/icu4c/4.8.1.1/icu4c-${ICU_VERSION//./_}-src.tgz"
+	curl $PROXY -O "http://download.icu-project.org/files/icu4c/${ICU_VERSION}/icu4c-${ICU_VERSION//./_}-src.tgz"
 fi
 
 # Extract source
@@ -38,13 +38,16 @@ tar xvf "icu4c-${ICU_VERSION//./_}-src.tgz"
 
 # Build
 
-HOSTBUILD=${TMPDIR}/icu/hostbuild
+HOSTBUILD=${TMPDIR}/icu-hostbuild
 
-mkdir -p "icu/hostbuild"
-pushd "icu/hostbuild"
-../source/configure --prefix="${HOSTBUILD}"
-make
-popd
+if [ ! -d ${HOSTBUILD} ]
+then
+	mkdir -p ${HOSTBUILD}
+	pushd ${HOSTBUILD}
+	${TMPDIR}/icu/source/configure --prefix="${HOSTBUILD}"
+	make
+	popd
+fi
 
 pushd "icu/source"
 
@@ -75,7 +78,7 @@ else
 	done
 fi
 
-DROID_GCC_LIBS=${TMPDIR}/droidtoolchains/${PLATFORM}/lib/gcc/arm-linux-androideabi/4.4.3
+DROID_GCC_LIBS=${TMPDIR}/droidtoolchains/${PLATFORM}/lib/gcc/arm-linux-androideabi/${TOOLCHAIN_VERSION}
 
 export CC=${DROIDTOOLS}-gcc
 export LD=${DROIDTOOLS}-ld
@@ -88,9 +91,10 @@ export STRIP=${DROIDTOOLS}-strip
 export CXXCPP=${DROIDTOOLS}-cpp
 export RANLIB=${DROIDTOOLS}-ranlib
 
-export LDFLAGS="-Os -fPIC -nostdlib -Wl,--entry=main,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${DROID_GCC_LIBS} -L${ROOTDIR}/lib -lc -lgcc"
-export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include -D__STDC_INT64__ -DU_HAVE_NAMESPACE=1"
-export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include -D__STDC_INT64__ -DU_HAVE_NAMESPACE=1"
+export LDFLAGS="-Os -fPIC -Wl,--entry=main,-rpath-link=${SYSROOT}/usr/lib"
+export CFLAGS="-Os -pipe -DU_HAVE_NAMESPACE=0 -DU_HAVE_NL_LANGINFO_CODESET=0"
+export CPPFLAGS="${CFLAGS}"
+export CXXFLAGS="${CFLAGS}"
 
 if [ "${PLATFORM}" == "arm-linux-androideabi" ]
 then
@@ -99,14 +103,7 @@ else
 	./configure --host=i386-linux --prefix=${ROOTDIR} --with-cross-build="${HOSTBUILD}" --enable-extras=no --enable-strict=no --enable-tests=no --enable-samples=no --enable-dyload=no --enable-tools=no --with-data-packaging=archive
 fi
 
-# Fix libtool to not create versioned shared libraries
-#mv "libtool" "libtool~"
-#sed "s/library_names_spec=\".*\"/library_names_spec=\"~##~libname~##~{shared_ext}\"/" libtool~ > libtool~1
-#sed "s/soname_spec=\".*\"/soname_spec=\"~##~{libname}~##~{shared_ext}\"/" libtool~1 > libtool~2
-#sed "s/~##~/\\\\$/g" libtool~2 > libtool
-#chmod u+x libtool
-
-make
+make VERBOSE=1
 make install
 popd
 

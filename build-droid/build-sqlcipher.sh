@@ -27,17 +27,20 @@ set -e
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Download source
-if [ ! -e "sqlcipher-${SQLCIPHER_VERSION}.tar.gz" ]
+if [ "${SQLCIPHER_VERSION}" == "master" ] && [ ! -e "sqlcipher-master.zip" ]
 then
-  curl $PROXY -o "sqlcipher-${SQLCIPHER_VERSION}.tar.gz" -L "https://nodeload.github.com/sqlcipher/sqlcipher/tarball/v${SQLCIPHER_VERSION}"
+	curl $PROXY -o "sqlcipher-master.zip" -L "https://github.com/sqlcipher/sqlcipher/archive/master.zip"
+elif [ ! -e "sqlcipher-${SQLCIPHER_VERSION}.zip" ]
+then
+	curl $PROXY -o "sqlcipher-${SQLCIPHER_VERSION}.zip" -L "https://github.com/sqlcipher/sqlcipher/archive/v${SQLCIPHER_VERSION}.zip"
 fi
 
 # Extract source
-rm -rf *-sqlcipher-*
-tar xvf "sqlcipher-${SQLCIPHER_VERSION}.tar.gz"
+rm -rf sqlcipher-${SQLCIPHER_VERSION}
+unzip "sqlcipher-${SQLCIPHER_VERSION}.zip"
 
 # Build
-pushd *-sqlcipher-*
+pushd sqlcipher-${SQLCIPHER_VERSION}
 export CC=${DROIDTOOLS}-gcc
 export LD=${DROIDTOOLS}-ld
 export CPP=${DROIDTOOLS}-cpp
@@ -66,4 +69,4 @@ make install
 popd
 
 # Clean up
-rm -rf *-sqlcipher-*
+rm -rf sqlcipher-${SQLCIPHER_VERSION}

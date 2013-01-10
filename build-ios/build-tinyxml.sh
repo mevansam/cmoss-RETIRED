@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
+# Changes for tinyxml Copyright (c) 2012, Lothar May
 # Copyright (c) 2010, Pierre-Olivier Latour
 # All rights reserved.
 #
@@ -27,26 +28,28 @@ set -e
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Download source
-if [ ! -e "libssh2-${LIBSSH2_VERSION}.tar.gz" ]
+if [ ! -e "tinyxml_${TINYXML_FILE}.tar.gz" ]
 then
-  curl $PROXY -O "http://www.libssh2.org/download/libssh2-${LIBSSH2_VERSION}.tar.gz"
+  curl $PROXY -L -O "http://downloads.sourceforge.net/project/tinyxml/tinyxml/${TINYXML_VERSION}/tinyxml_${TINYXML_FILE}.tar.gz"
 fi
 
 # Extract source
-rm -rf "libssh2-${LIBSSH2_VERSION}"
-tar zxvf "libssh2-${LIBSSH2_VERSION}.tar.gz"
-pushd "libssh2-${LIBSSH2_VERSION}"
+rm -rf "tinyxml"
+tar xvf "tinyxml_${TINYXML_FILE}.tar.gz"
+cp ${TOPDIR}/build-ios/Makefile.tinyxml tinyxml/Makefile
 
 # Build
-export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
+pushd "tinyxml"
+BIGFILES=-D_FILE_OFFSET_BITS=64
+export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -Wno-unknown-pragmas -Wno-format -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -g ${BIGFILES}"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-libgcrypt --with-libgcrypt-prefix=${ROOTDIR} --with-libz --with-libz-prefix=-${ROOTDIR} -with-openssl --with-libssl-prefix=${ROOTDIR} --disable-shared --enable-static
-make
-make install
+make CC="${CC}" AR="${AR}" RANLIB="${RANLIB}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+cp libtinyxml.a ${ROOTDIR}/lib
+cp tinyxml.h ${ROOTDIR}/include
 popd
 
 # Clean up
-rm -rf "libssh2-${LIBSSH2_VERSION}"
+rm -rf "tinyxml"

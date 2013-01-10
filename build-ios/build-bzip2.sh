@@ -36,34 +36,15 @@ fi
 rm -rf "bzip2-${BZIP2_VERSION}"
 tar zxvf "bzip2-${BZIP2_VERSION}.tar.gz"
 cp ${TOPDIR}/build-ios/Makefile.bzip2 bzip2-${BZIP2_VERSION}/Makefile
+pushd "bzip2-${BZIP2_VERSION}"
 
 # Build
-pushd "bzip2-${BZIP2_VERSION}"
-BIGFILES=-D_FILE_OFFSET_BITS=64
-export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${SDK}.sdk"
-export CC=${DEVROOT}/usr/bin/gcc
-export LD=${DEVROOT}/usr/bin/ld
-#export CPP=${DEVROOT}/usr/bin/cpp
-export CXX=${DEVROOT}/usr/bin/g++
-export AR=${DEVROOT}/usr/bin/ar
-export AS=${DEVROOT}/usr/bin/as
-export NM=${DEVROOT}/usr/bin/nm
-#export CXXCPP=${DEVROOT}/usr/bin/cpp
-export RANLIB=${DEVROOT}/usr/bin/ranlib
-export LDFLAGS="-Os -D_FILE_OFFSET_BITS=64 -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -L${ROOTDIR}/lib"
-export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -I${ROOTDIR}/include -g ${BIGFILES}"
-export CXXFLAGS="-Os -D_FILE_OFFSET_BITS=64 -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -I${ROOTDIR}/include"
-if [ "${SDK}" == "3.2" ]
-then
-  if [ "${PLATFORM}" == "iPhoneSimulator" ]
-  then
-    # Work around linker error "ld: library not found for -lcrt1.10.6.o" on iPhone Simulator 3.2
-    export LDFLAGS="${LDFLAGS} -mmacosx-version-min=10.5"
-    export CFLAGS="${CFLAGS} -mmacosx-version-min=10.5"
-    export CXXFLAGS="${CXXFLAGS} -mmacosx-version-min=10.5"
-  fi
-fi
+export BIGFILES=-D_FILE_OFFSET_BITS=64
+export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -g ${BIGFILES}"
+export CPPFLAGS="${CFLAGS}"
+export CXXFLAGS="${CFLAGS}"
+
 make CC="${CC}" AR="${AR}" RANLIB="${RANLIB}" CFLAGS="${CFLAGS}"
 make install PREFIX=${ROOTDIR}  # Ignore errors due to share libraries missing
 popd

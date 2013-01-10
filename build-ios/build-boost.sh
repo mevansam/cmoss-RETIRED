@@ -210,6 +210,10 @@ scrunchAllLibsTogetherInOneLibPerPlatform()
     mkdir -p $BUILDDIR/armv7/obj
     mkdir -p $BUILDDIR/i386/obj
 
+    mkdir -p ${TMPDIR}/build/ios/iPhoneOS-V6/lib
+    mkdir -p ${TMPDIR}/build/ios/iPhoneOS-V7/lib
+    mkdir -p ${TMPDIR}/build/ios/iPhoneSimulator/lib
+
     ALL_LIBS=""
 
     echo Splitting all existing fat binaries...
@@ -217,7 +221,11 @@ scrunchAllLibsTogetherInOneLibPerPlatform()
         ALL_LIBS="$ALL_LIBS libboost_$NAME.a"
         lipo "$BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphone/release/architecture-arm/link-static/macosx-version-iphone-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a" -thin armv6 -o $BUILDDIR/armv6/libboost_$NAME.a
         lipo "$BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphone/release/architecture-arm/link-static/macosx-version-iphone-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a" -thin armv7 -o $BUILDDIR/armv7/libboost_$NAME.a
-        cp "$BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphonesim/release/architecture-x86/link-static/macosx-version-iphonesim-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a" $BUILDDIR/i386/
+        cp "$BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphonesim/release/architecture-x86/link-static/macosx-version-iphonesim-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a" $BUILDDIR/i386/libboost_$NAME.a
+
+        cp $BUILDDIR/armv6/libboost_$NAME.a ${TMPDIR}/build/ios/iPhoneOS-V6/lib
+        cp $BUILDDIR/armv7/libboost_$NAME.a ${TMPDIR}/build/ios/iPhoneOS-V7/lib
+        cp $BUILDDIR/i386/libboost_$NAME.a ${TMPDIR}/build/ios/iPhoneSimulator/lib
     done
 
     echo "Decomposing each architecture's .a files"
@@ -231,19 +239,16 @@ scrunchAllLibsTogetherInOneLibPerPlatform()
     echo "Linking each architecture into an uberlib ($ALL_LIBS => libboost.a )"
     rm -f ${TMPDIR}/build/ios/*/lib/libboost.a
     echo ...armv6
-    mkdir -p ${TMPDIR}/build/ios/iPhoneOS-V6-${SDK}/lib
-    (cd $BUILDDIR/armv6; $ARM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneOS-V6-${SDK}/lib/libboost.a obj/*.o; )
+    (cd $BUILDDIR/armv6; $ARM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneOS-V6/lib/libboost.a obj/*.o; )
     echo ...armv7
-    mkdir -p ${TMPDIR}/build/ios/iPhoneOS-V7-${SDK}/lib
-    (cd $BUILDDIR/armv7; $ARM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneOS-V7-${SDK}/lib/libboost.a obj/*.o; )
+    (cd $BUILDDIR/armv7; $ARM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneOS-V7/lib/libboost.a obj/*.o; )
     echo ...i386
-    mkdir -p ${TMPDIR}/build/ios/iPhoneSimulator-${SDK}/lib
-    (cd $BUILDDIR/i386;  $SIM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneSimulator-${SDK}/lib/libboost.a obj/*.o; )
+    (cd $BUILDDIR/i386;  $SIM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneSimulator/lib/libboost.a obj/*.o; )
 
     echo "Copying header files"
-    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneOS-V6-${SDK}
-    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneOS-V7-${SDK}
-    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneSimulator-${SDK}
+    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneOS-V6
+    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneOS-V7
+    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneSimulator
 }
 
 #===============================================================================

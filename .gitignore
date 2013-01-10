@@ -1,9 +1,12 @@
 
 .gitignore.*
 .DS_Store
+*.bak
+*.old
 
 bin/
 tmp/
+tmp.*/
 log/
 
 droid-testapp/bin

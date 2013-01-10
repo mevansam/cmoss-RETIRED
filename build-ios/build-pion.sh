@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # Copyright (c) 2010, Pierre-Olivier Latour
@@ -27,26 +27,38 @@ set -e
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Download source
-if [ ! -e "libssh2-${LIBSSH2_VERSION}.tar.gz" ]
+if [ "${PION_VERSION}" == "master" ] && [ ! -e "pion-master.zip" ]
 then
-  curl $PROXY -O "http://www.libssh2.org/download/libssh2-${LIBSSH2_VERSION}.tar.gz"
+	curl $PROXY -o "pion-master.zip" -L "https://github.com/cloudmeter/pion/archive/master.zip"
+elif [ ! -e "pion-${PION_VERSION}.zip" ]
+then
+	curl $PROXY -o "pion-${PION_VERSION}.zip" -L "https://nodeload.github.com/cloudmeter/pion/zip/${PION_VERSION}"
 fi
 
 # Extract source
-rm -rf "libssh2-${LIBSSH2_VERSION}"
-tar zxvf "libssh2-${LIBSSH2_VERSION}.tar.gz"
-pushd "libssh2-${LIBSSH2_VERSION}"
+rm -fr "pion-${PION_VERSION}"
+unzip "pion-${PION_VERSION}.zip"
+pushd pion-${PION_VERSION}
 
 # Build
 export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -fvisibility=hidden -fvisibility-inlines-hidden -fdata-sections"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-libgcrypt --with-libgcrypt-prefix=${ROOTDIR} --with-libz --with-libz-prefix=-${ROOTDIR} -with-openssl --with-libssl-prefix=${ROOTDIR} --disable-shared --enable-static
+# export CPPFLAGS="-Os --sysroot ${SYSROOT} -Wno-variadic-macros -fexceptions -frtti -fpic -ffunction-sections -funwind-tables -march=armv5te -mtune=xscale -msoft-float -mthumb -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -fvisibility=hidden -fvisibility-inlines-hidden -fdata-sections -DANDROID -D__ANDROID__ -DNDEBUG  -D__arm__ -D_REENTRANT -D_GLIBCXX__PTHREADS -I${ROOTDIR}/include"
+
+./autogen.sh
+./configure --host=${ARCH}-apple-darwin --with-cpu=${ARCH} --prefix=${ROOTDIR} --with-boost=${ROOTDIR} --with-zlib=${ROOTDIR} --with-bzlib=${ROOTDIR} --with-openssl=${ROOTDIR} --enable-static --disable-logging --disable-tests --disable-doxygen-doc
+
+# Patch to fix link errors
+sed 's/\/src\/libpion/\/src\/\.libs\/libpion/g' utils/Makefile > utils/Makefile.1
+sed 's/\.la/\.a/g' utils/Makefile.1 > utils/Makefile.2
+cp -f utils/Makefile.2 utils/Makefile
+
 make
 make install
 popd
 
 # Clean up
-rm -rf "libssh2-${LIBSSH2_VERSION}"
+rm -rf "pion-${PION_VERSION}"

@@ -100,6 +100,8 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-g
 <compileflags>-std=gnu++0x
 <compileflags>-Wno-variadic-macros
+<compileflags>-Wno-unused-but-set-variable
+<compileflags>-Wno-vla
 <compileflags>-fexceptions
 <compileflags>-fpic
 <compileflags>-ffunction-sections
@@ -113,6 +115,7 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-I${SDK}/platforms/android-14/arch-x86/usr/include
 <compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include
 <compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86/include
+<compileflags>-I${TMPDIR}/${BOOST_SOURCE_NAME}
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
@@ -135,7 +138,9 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-O2
 <compileflags>-g
 <compileflags>-std=gnu++0x
-<compileflags>-Wno-variadic-macros
+<compileflags>-Wno-variadic-macros	
+<compileflags>-Wno-unused-but-set-variable
+<compileflags>-Wno-vla
 <compileflags>-fexceptions
 <compileflags>-fpic
 <compileflags>-ffunction-sections
@@ -157,6 +162,7 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-I${SDK}/platforms/android-14/arch-arm/usr/include
 <compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include
 <compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/include
+<compileflags>-I${TMPDIR}/${BOOST_SOURCE_NAME}
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
@@ -187,9 +193,9 @@ EOF
 
 if [ "${PLATFORM}" == "arm-linux-androideabi" ]
 then
-	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-arm --disable-filesystem3 define=BOOST_FILESYSTEM_VERSION=2 -d+2 install
+	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-arm install
 else
-	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-i686 --disable-filesystem3 define=BOOST_FILESYSTEM_VERSION=2 -d+2 install
+	./b2 link=static threading=multi --layout=unversioned target-os=linux toolset=android-i686 install
 fi
 
 # Combine boost libraries into one static archive

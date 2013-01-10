@@ -40,22 +40,13 @@ pushd "unzip${MINIZIP_VERSION}"
 unzip "../unzip${MINIZIP_VERSION}.zip"
 
 # Copy customized make files
-cp -f ${TOPDIR}/build-droid/Makefile.minizip .
+cp -f ${TOPDIR}/build-ios/Makefile.minizip .
 
 # Build
-export CC=${DROIDTOOLS}-gcc
-export LD=${DROIDTOOLS}-ld
-#export CPP=${DROIDTOOLS}-cpp
-export CXX=${DROIDTOOLS}-g++
-export AR=${DROIDTOOLS}-ar
-export AS=${DROIDTOOLS}-as
-export NM=${DROIDTOOLS}-nm
-export STRIP=${DROIDTOOLS}-strip
-#export CXXCPP=${DROIDTOOLS}-cpp
-export RANLIB=${DROIDTOOLS}-ranlib
-export LDFLAGS="-Os -fpic -nostdlib -lc -shared -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib -lz"
-export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include -Dunix"
-export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
+export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib -lz -dynamiclib"
+export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -Dfopen64=fopen -Dfseeko64=fseeko -Dftello64=ftello"
+export CPPFLAGS="${CFLAGS}"
+export CXXFLAGS="${CFLAGS}"
 
 make -f Makefile.minizip install CC="${CC}" CFLAGS="${CFLAGS}" RANLIB="${RANLIB}" LDFLAGS="${LDFLAGS}" PREFIX="${ROOTDIR}"
 popd
