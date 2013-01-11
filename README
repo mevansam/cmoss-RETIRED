@@ -23,6 +23,8 @@ To build armv6 binaries for iOS you need to use the 5.1 SDK or lower. The blog a
 
 The scripts will download the source code from the internet and build them locally. So your build machine needs to be connected to the internet when building. Once the source code archives have been downloaded they will be saved in the [cmoss root path]/tmp folder and will not be downloaded again unless you delete them or change the version. The builds have been tested with the versions hard-coded in the script files. If you change these versions it is possible the build for that library may break. If you do find a new version that breaks a build please let me know so it can be fixed.
 
+There is an issue with the icu builds with the SDK that ship with versions before XCode 4.5. This results in the Android builds having to be rerun when the icu host build fails, but it fails the entire icu build for iOS. If you are on an older version of XCode please comment out the icu build step.
+
 To run iOS build:
 
 cd [cmoss root path]/build-ios
