@@ -113,15 +113,15 @@ using android : i686 : ${DROIDTOOLS}-g++ :
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
 <compileflags>-I${SDK}/platforms/android-14/arch-x86/usr/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/libs/x86/include
 <compileflags>-I${TMPDIR}/${BOOST_SOURCE_NAME}
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
 <linkflags>-Wl,-rpath-link=${SYSROOT}/usr/lib
 <linkflags>-L${SYSROOT}/usr/lib
-<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/x86
+<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/libs/x86
 <linkflags>-L${ROOTDIR}/lib
 # Flags above are for android
 <architecture>x86
@@ -160,15 +160,15 @@ using android : arm : ${DROIDTOOLS}-g++ :
 <compileflags>-D__ANDROID__
 <compileflags>-DNDEBUG
 <compileflags>-I${SDK}/platforms/android-14/arch-arm/usr/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/include
-<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/include
+<compileflags>-I${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/libs/armeabi-v7a/include
 <compileflags>-I${TMPDIR}/${BOOST_SOURCE_NAME}
 <compileflags>-I${ROOTDIR}/include
 <linkflags>-nostdlib
 <linkflags>-lc
 <linkflags>-Wl,-rpath-link=${SYSROOT}/usr/lib
 <linkflags>-L${SYSROOT}/usr/lib
-<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/libs/armeabi-v7a
+<linkflags>-L${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}/libs/armeabi-v7a
 <linkflags>-L${ROOTDIR}/lib
 # Flags above are for android
 <architecture>arm
