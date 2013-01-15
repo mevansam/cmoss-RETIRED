@@ -27,22 +27,43 @@ set -e
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Download source
-if [ ! -e "pion-net-${PION_VERSION}.tar.gz" ]
+if [ "${PION_VERSION}" == "master" ] && [ ! -e "pion-master.zip" ]
 then
-	curl $PROXY -O "http://pion.org/files/pion-net-${PION_VERSION}.tar.gz"
+	curl $PROXY -o "pion-master.zip" -L "https://github.com/cloudmeter/pion/archive/master.zip"
+elif [ ! -e "pion-${PION_VERSION}.zip" ]
+then
+	curl $PROXY -o "pion-${PION_VERSION}.zip" -L "https://nodeload.github.com/cloudmeter/pion/zip/${PION_VERSION}"
 fi
 
 # Extract source
-rm -fr "pion-net-${PION_VERSION}"
-tar xvf "pion-net-${PION_VERSION}.tar.gz"
+rm -fr "pion-${PION_VERSION}"
+unzip "pion-${PION_VERSION}.zip"
 
 # Build
-pushd "pion-net-${PION_VERSION}"
+pushd "pion-${PION_VERSION}"
 
-tar xvf "${TOPDIR}/build-droid/droid-pion-patch.tar.gz"
+GNUSTL_LIBS=${SDK}/sources/cxx-stl/gnu-libstdc++/${TOOLCHAIN_VERSION}
+
+export CC=${DROIDTOOLS}-gcc
+export LD=${DROIDTOOLS}-ld
+export CPP=${DROIDTOOLS}-cpp
+export CXX=${DROIDTOOLS}-g++
+export AR=${DROIDTOOLS}-ar
+export AS=${DROIDTOOLS}-as
+export NM=${DROIDTOOLS}-nm
+export STRIP=${DROIDTOOLS}-strip
+export CXXCPP=${DROIDTOOLS}-cpp
+export RANLIB=${DROIDTOOLS}-ranlib
+
+export LDFLAGS="-Os -fPIC -L${GNUSTL_LIBS}/libs/armeabi-v7a -lgnustl_static -L${ROOTDIR}/lib"
+export CPPFLAGS="-Os --sysroot ${SYSROOT} -Wno-variadic-macros -Wno-unused-but-set-variable -Wno-vla -fexceptions -frtti -fpic -ffunction-sections -funwind-tables -march=armv5te -mtune=xscale -msoft-float -mthumb -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -fvisibility=hidden -fvisibility-inlines-hidden -fdata-sections -DANDROID -D__ANDROID__ -DNDEBUG  -D__arm__ -D_REENTRANT -D_GLIBCXX__PTHREADS -I${GNUSTL_LIBS}/include -I${GNUSTL_LIBS}/libs/armeabi-v7a/include -I${ROOTDIR}/include"
+
+./autogen.sh
 
 # Apply patches to icu
-PATCHES_DIR=${TMPDIR}/pion-net-${PION_VERSION}/droid-pion-patch
+tar xvf "${TOPDIR}/build-droid/droid-pion-patch.tar.gz"
+
+PATCHES_DIR=${TMPDIR}/pion-${PION_VERSION}/droid-pion-patch
 if [ ! -d "$PATCHES_DIR" ] ; then
 	echo "ERROR: Could not locate droid build patch files."
 	exit 1
@@ -66,32 +87,16 @@ else
 	done
 fi
 
-export CC=${DROIDTOOLS}-gcc
-export LD=${DROIDTOOLS}-ld
-export CPP=${DROIDTOOLS}-cpp
-export CXX=${DROIDTOOLS}-g++
-export AR=${DROIDTOOLS}-ar
-export AS=${DROIDTOOLS}-as
-export NM=${DROIDTOOLS}-nm
-export STRIP=${DROIDTOOLS}-strip
-export CXXCPP=${DROIDTOOLS}-cpp
-export RANLIB=${DROIDTOOLS}-ranlib
-
-export LDFLAGS="-Os -fPIC -shared -L${SYSROOT}/usr/lib"
-export CPPFLAGS="-Os --sysroot ${SYSROOT} -Wno-variadic-macros -fexceptions -frtti -fpic -ffunction-sections -funwind-tables -march=armv5te -mtune=xscale -msoft-float -mthumb -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -fvisibility=hidden -fvisibility-inlines-hidden -fdata-sections -DANDROID -D__ANDROID__ -DNDEBUG  -D__arm__ -D_REENTRANT -D_GLIBCXX__PTHREADS -I${ROOTDIR}/include"
-
+# Configure build
 ./configure --host=${ARCH}-android-linux --target=${PLATFORM} --enable-static --disable-shared --prefix=${ROOTDIR} --with-boost=${ROOTDIR} --with-zlib=${ROOTDIR} --with-bzlib=${ROOTDIR} --with-openssl=${ROOTDIR} --disable-logging --disable-tests --disable-doxygen-doc
 
-# Fix libtool to not create versioned shared libraries
-#mv "libtool" "libtool~"
-#sed "s/library_names_spec=\".*\"/library_names_spec=\"~##~libname~##~{shared_ext}\"/" libtool~ > libtool~1
-#sed "s/soname_spec=\".*\"/soname_spec=\"~##~{libname}~##~{shared_ext}\"/" libtool~1 > libtool~2
-#sed "s/~##~/\\\\$/g" libtool~2 > libtool
-#chmod u+x libtool
+# Patch to fix link errors
+sed 's/-shared //g' services/Makefile > services/Makefile.1
+cp -f services/Makefile.1 services/Makefile
 
 make
 make install
 popd
 
 # Clean up
-rm -rf "pion-net-${PION_VERSION}"
+rm -rf "pion-${PION_VERSION}"

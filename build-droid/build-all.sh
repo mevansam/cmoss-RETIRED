@@ -184,7 +184,7 @@ do
 	${TOPDIR}/build-droid/build-soci.sh > "${LOGPATH}-soci.log"
 
 	# Build PION
-	#${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
+	${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
 
 	# Remove junk
 	rm -rf "${ROOTDIR}/bin"
