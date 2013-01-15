@@ -17,7 +17,7 @@ The CMOSS scripts can be used to build the following C/C++ Open Source Software 
 * soci - http://soci.sourceforge.net/ - generic C++ database API
 * pion : http://pion.org/ - C++ HTTP API
 
-The android kernel already provides some of these shared libraries so check if they are available before including them in your NDK project. For example both openssl and icu are part of the Android distribution. The Pion libraries have been temporarily commented out for Android, as I have been unable to resolve the build issues with the latest distribution in GitHub.
+The android kernel already provides some of these shared libraries so check if they are available before including them in your NDK project. For example both openssl and icu are part of the Android distribution. 
 
 To build armv6 binaries for iOS you need to use the 5.1 SDK or lower. The blog at http://blog.chpwn.com/post/31824877081 provides instructions on how to add the 5.1 SDK alongside the 6.0 SDK if you are using XCode 4.5. The scripts will automatically pick up the older SDK for armv6 builds. If the 5.1 SDK is not available then armv6 binaries will not be built.
 
@@ -57,3 +57,5 @@ These build scripts were tested on a Mac OS X 10 with the following Mac ports:
   zlib @1.2.5_0 (active)
 
 The Android scripts should work in a Linux environment but have not been tested.
+
+The builds do not run the unit tests that come with the libraries on each platform. If you run into linker issues with the libraries you will need to tweak the builds. Please let me know of any issues when using the libraries and fixes that need to be addressed.
