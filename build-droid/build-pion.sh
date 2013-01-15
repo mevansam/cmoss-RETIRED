@@ -30,6 +30,9 @@ set -e
 if [ "${PION_VERSION}" == "master" ] && [ ! -e "pion-master.zip" ]
 then
 	curl $PROXY -o "pion-master.zip" -L "https://github.com/cloudmeter/pion/archive/master.zip"
+elif [ "${PION_VERSION}" == "develop" ] && [ ! -e "pion-develop.zip" ]
+then
+	curl $PROXY -o "pion-develop.zip" -L "https://github.com/cloudmeter/pion/archive/develop.zip"
 elif [ ! -e "pion-${PION_VERSION}.zip" ]
 then
 	curl $PROXY -o "pion-${PION_VERSION}.zip" -L "https://nodeload.github.com/cloudmeter/pion/zip/${PION_VERSION}"
@@ -59,33 +62,6 @@ export LDFLAGS="-Os -fPIC -L${GNUSTL_LIBS}/libs/armeabi-v7a -lgnustl_static -L${
 export CPPFLAGS="-Os --sysroot ${SYSROOT} -Wno-variadic-macros -Wno-unused-but-set-variable -Wno-vla -fexceptions -frtti -fpic -ffunction-sections -funwind-tables -march=armv5te -mtune=xscale -msoft-float -mthumb -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -fvisibility=hidden -fvisibility-inlines-hidden -fdata-sections -DANDROID -D__ANDROID__ -DNDEBUG  -D__arm__ -D_REENTRANT -D_GLIBCXX__PTHREADS -I${GNUSTL_LIBS}/include -I${GNUSTL_LIBS}/libs/armeabi-v7a/include -I${ROOTDIR}/include"
 
 ./autogen.sh
-
-# Apply patches to icu
-tar xvf "${TOPDIR}/build-droid/droid-pion-patch.tar.gz"
-
-PATCHES_DIR=${TMPDIR}/pion-${PION_VERSION}/droid-pion-patch
-if [ ! -d "$PATCHES_DIR" ] ; then
-	echo "ERROR: Could not locate droid build patch files."
-	exit 1
-fi
-
-PATCHES=`(cd $PATCHES_DIR && find . -name "*.patch" | sort) 2> /dev/null`
-if [ -z "$PATCHES" ] ; then
-	echo "No patches files in $PATCHES_DIR"
-else
-	PATCHES=`echo $PATCHES | sed -e s%^\./%%g`
-	SRC_DIR=${TMPDIR}/icu/source
-	for PATCH in $PATCHES; do
-		PATCHDIR=`dirname $PATCH`
-		PATCHNAME=`basename $PATCH`
-		echo "Applying $PATCHNAME into $SRC_DIR/$PATCHDIR"
-		patch -p1 < $PATCHES_DIR/$PATCH
-		if [ $? != 0 ] ; then
-			dump "ERROR: Patch failure !! Please check your patches directory! Try to perform a clean build using --clean"
-			exit 1
-		fi
-	done
-fi
 
 # Configure build
 ./configure --host=${ARCH}-android-linux --target=${PLATFORM} --enable-static --disable-shared --prefix=${ROOTDIR} --with-boost=${ROOTDIR} --with-zlib=${ROOTDIR} --with-bzlib=${ROOTDIR} --with-openssl=${ROOTDIR} --disable-logging --disable-tests --disable-doxygen-doc
