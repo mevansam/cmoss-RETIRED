@@ -218,10 +218,6 @@ do
 
 done
 
-# Remove individual boost libraries as all were combined into one 
-# libboost.a (comment this line if individual libraries are required)
-find ${TMPDIR}/build/ios -name "libboost_*.*" -exec rm -f {} \;
-
 # Create Lipo Archives and Framework bundle
 
 DEVROOT=${DEVELOPER}/Platforms/iPhoneOS.platform/Developer
