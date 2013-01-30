@@ -57,9 +57,9 @@ export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
 pushd "icu/source"
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-cross-build="${HOSTBUILD}" --enable-static --disable-shared
+./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-cross-build="${HOSTBUILD}" --enable-static --disable-shared --enable-extras=no --enable-strict=no --enable-tests=no --enable-samples=no --enable-dyload=no --enable-tools=no --with-data-packaging=archive
 
-make
+make VERBOSE=1
 make install
 popd
 
