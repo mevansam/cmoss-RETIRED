@@ -70,7 +70,6 @@ fi
 
 : ${TARBALLDIR:=`pwd`}
 : ${SRCDIR:=`pwd`/boost/src}
-: ${BUILDDIR:=`pwd`/boost/build}
 : ${PREFIXDIR:=`pwd`/boost/prefix}
 
 BOOST_TARBALL=$TARBALLDIR/${BOOST_SOURCE_NAME}.tar.gz
@@ -78,11 +77,7 @@ BOOST_SRC=$SRCDIR/${BOOST_SOURCE_NAME}
 
 #===============================================================================
 
-ARM_DEV_DIR=${DEVELOPER}/Platforms/iPhoneOS.platform/Developer/usr/bin/
-SIM_DEV_DIR=${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/usr/bin/
-
-ARM_COMBINED_LIB=$BUILDDIR/lib_boost_arm.a
-SIM_COMBINED_LIB=$BUILDDIR/lib_boost_x86.a
+DEV_DIR=${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/usr/bin/
 
 #===============================================================================
 
@@ -90,10 +85,19 @@ echo "BOOST_VERSION:     $BOOST_VERSION"
 echo "BOOST_LIBS:        $BOOST_LIBS"
 echo "BOOST_TARBALL:     $BOOST_TARBALL"
 echo "BOOST_SRC:         $BOOST_SRC"
-echo "BUILDDIR:          $BUILDDIR"
 echo "PREFIXDIR:         $PREFIXDIR"
 echo "IPHONE_SDKVERSION: $IPHONE_SDKVERSION"
 echo
+
+# boost needs its own versions of some values
+if [ "${PLATFORM}" == "iPhoneSimulator" ]
+then
+    BOOST_TOOL="iphonesim"
+    BOOST_ARCH="x86"
+else
+    BOOST_TOOL="iphone"
+    BOOST_ARCH="arm"
+fi
 
 #===============================================================================
 # Functions
@@ -120,7 +124,6 @@ cleanEverythingReadyToStart()
 {
     echo Cleaning everything before we start to build...
     rm -rf $BOOST_SRC
-    rm -rf $BUILDDIR
     rm -rf $PREFIXDIR
     doneSection
 }
@@ -142,18 +145,12 @@ writeBjamUserConfig()
     # You need to do this to point bjam at the right compiler
     # ONLY SEEMS TO WORK IN HOME DIR GRR
     echo Writing usr-config
-    #mkdir -p $BUILDDIR
-    #cat > ~/user-config.jam <<EOF
+  
     cat >> $BOOST_SRC/tools/build/v2/user-config.jam <<EOF
-using darwin : ${SDK}~iphone
-   : ${DEVELOPER}/Platforms/iPhoneOS.platform/Developer/usr/bin/gcc -arch armv7 -mthumb -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
-   : <striper>
-   : <architecture>arm <target-os>iphone
-   ;
-using darwin : ${SDK}~iphonesim
-   : ${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc -arch i386 -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
-   : <striper>
-   : <architecture>x86 <target-os>iphone
+using darwin : ${SDK}~${BOOST_TOOL}
+   : ${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/usr/bin/gcc -arch $ARCH -mthumb -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
+   : 
+   : <architecture>$BOOST_ARCH <target-os>iphone
    ;
 EOF
     doneSection
@@ -187,67 +184,31 @@ buildBoostForiPhoneOS()
 {
     cd $BOOST_SRC
 
-    ./bjam --prefix="$PREFIXDIR" toolset=darwin architecture=arm target-os=iphone macosx-version=iphone-${IPHONE_SDKVERSION} define=_LITTLE_ENDIAN link=static install
-    doneSection
-
-    ./bjam toolset=darwin architecture=x86 target-os=iphone macosx-version=iphonesim-${IPHONE_SDKVERSION} link=static stage
+    ./bjam --prefix="$ROOTDIR" toolset=darwin architecture=$BOOST_ARCH target-os=iphone macosx-version=${BOOST_TOOL}-${IPHONE_SDKVERSION} define=_LITTLE_ENDIAN link=static install
     doneSection
 }
 
 #===============================================================================
 
-scrunchAllLibsTogetherInOneLibPerPlatform()
+scrunchAllLibsTogetherInOneLib()
 {
-    ALL_LIBS_ARM=""
-    ALL_LIBS_SIM=""
-    for NAME in $BOOST_LIBS; do
-        ALL_LIBS_ARM="$ALL_LIBS_ARM $BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphone/release/architecture-arm/link-static/macosx-version-iphone-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a";
-        ALL_LIBS_SIM="$ALL_LIBS_SIM $BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphonesim/release/architecture-x86/link-static/macosx-version-iphonesim-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a";
+    OBJDIR=$BOOST_SRC/tmp/obj
+    mkdir -p $OBJDIR
+    for a in $ROOTDIR/lib/libboost_*.a; do
+    
+        # telling bjam to make armv7 always makes fat arm6/7 binaries (ug); we need to thin it to just the arch we want    
+        if [ "${ARCH}" == "armv7" ]
+        then
+            echo thining $a...
+            lipo -thin $ARCH $a -output $a
+        fi    
+
+        echo Decomposing $a...
+        (cd $OBJDIR; ${DEV_DIR}/ar -x $a );
     done;
 
-    mkdir -p $BUILDDIR/armv6/obj
-    mkdir -p $BUILDDIR/armv7/obj
-    mkdir -p $BUILDDIR/i386/obj
-
-    mkdir -p ${TMPDIR}/build/ios/iPhoneOS-V6/lib
-    mkdir -p ${TMPDIR}/build/ios/iPhoneOS-V7/lib
-    mkdir -p ${TMPDIR}/build/ios/iPhoneSimulator/lib
-
-    ALL_LIBS=""
-
-    echo Splitting all existing fat binaries...
-    for NAME in $BOOST_LIBS; do
-        ALL_LIBS="$ALL_LIBS libboost_$NAME.a"
-        lipo "$BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphone/release/architecture-arm/link-static/macosx-version-iphone-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a" -thin armv6 -o $BUILDDIR/armv6/libboost_$NAME.a
-        lipo "$BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphone/release/architecture-arm/link-static/macosx-version-iphone-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a" -thin armv7 -o $BUILDDIR/armv7/libboost_$NAME.a
-        cp "$BOOST_SRC/bin.v2/libs/$NAME/build/darwin-${SDK}~iphonesim/release/architecture-x86/link-static/macosx-version-iphonesim-$IPHONE_SDKVERSION/target-os-iphone/threading-multi/libboost_$NAME.a" $BUILDDIR/i386/libboost_$NAME.a
-
-        cp $BUILDDIR/armv6/libboost_$NAME.a ${TMPDIR}/build/ios/iPhoneOS-V6/lib
-        cp $BUILDDIR/armv7/libboost_$NAME.a ${TMPDIR}/build/ios/iPhoneOS-V7/lib
-        cp $BUILDDIR/i386/libboost_$NAME.a ${TMPDIR}/build/ios/iPhoneSimulator/lib
-    done
-
-    echo "Decomposing each architecture's .a files"
-    for NAME in $ALL_LIBS; do
-        echo Decomposing $NAME...
-        (cd $BUILDDIR/armv6/obj; ar -x ../$NAME );
-        (cd $BUILDDIR/armv7/obj; ar -x ../$NAME );
-        (cd $BUILDDIR/i386/obj; ar -x ../$NAME );
-    done
-
-    echo "Linking each architecture into an uberlib ($ALL_LIBS => libboost.a )"
-    rm -f ${TMPDIR}/build/ios/*/lib/libboost.a
-    echo ...armv6
-    (cd $BUILDDIR/armv6; $ARM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneOS-V6/lib/libboost.a obj/*.o; )
-    echo ...armv7
-    (cd $BUILDDIR/armv7; $ARM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneOS-V7/lib/libboost.a obj/*.o; )
-    echo ...i386
-    (cd $BUILDDIR/i386;  $SIM_DEV_DIR/ar crus ${TMPDIR}/build/ios/iPhoneSimulator/lib/libboost.a obj/*.o; )
-
-    echo "Copying header files"
-    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneOS-V6
-    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneOS-V7
-    cp -r ${PREFIXDIR}/include ${TMPDIR}/build/ios/iPhoneSimulator
+    echo creating $ROOTDIR/lib/libboost.a
+    (cd $OBJDIR; ${DEV_DIR}/ar crus $ROOTDIR/lib/libboost.a *.o; )
 }
 
 #===============================================================================
@@ -256,15 +217,13 @@ scrunchAllLibsTogetherInOneLibPerPlatform()
 
 [ -f "$BOOST_TARBALL" ] || abort "Source tarball missing."
 
-mkdir -p $BUILDDIR
-
 cleanEverythingReadyToStart
 unpackBoost
 inventMissingHeaders
-writeBjamUserConfig
 bootstrapBoost
+writeBjamUserConfig
 buildBoostForiPhoneOS
-scrunchAllLibsTogetherInOneLibPerPlatform
+scrunchAllLibsTogetherInOneLib
 
 echo "Completed successfully"
 

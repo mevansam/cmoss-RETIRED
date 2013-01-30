@@ -103,9 +103,6 @@ do
 	mkdir -p "${ROOTDIR}"
 done
 
-# Build BOOST
-${TOPDIR}/build-ios/build-boost.sh > "${LOGDIR}/boost.log"
-
 for PLATFORM in ${PLATFORMS}
 do
 	LOGPATH="${LOGDIR}/${PLATFORM}"
@@ -186,6 +183,9 @@ do
 
 	# Build libgsasl
 	${TOPDIR}/build-ios/build-libgsasl.sh > "${LOGPATH}-libgsasl.log"
+
+    # Build BOOST
+    ${TOPDIR}/build-ios/build-boost.sh > "${LOGPATH}-boost.log"
 
 	# Build tinyxml
 	${TOPDIR}/build-ios/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
