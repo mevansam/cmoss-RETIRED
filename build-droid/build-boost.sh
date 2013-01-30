@@ -183,8 +183,6 @@ using android : arm : ${DROIDTOOLS}-g++ :
 EOF
 
 cat >> project-config.jam <<EOF
-libraries = --with-date_time --with-filesystem --with-program_options --with-regex --with-signals --with-system --with-thread --with-iostreams ;
-
 option.set prefix : ${ROOTDIR}/ ;
 option.set exec-prefix : ${ROOTDIR}/bin ;
 option.set libdir : ${ROOTDIR}/lib ;
