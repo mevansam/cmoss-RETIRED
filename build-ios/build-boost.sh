@@ -87,10 +87,10 @@ echo
 # boost needs its own versions of some values
 if [ "${PLATFORM}" == "iPhoneSimulator" ]
 then
-    BOOST_TOOL="iphonesim"
+    BOOST_PLAT="iphonesim"
     BOOST_ARCH="x86"
 else
-    BOOST_TOOL="iphone"
+    BOOST_PLAT="iphone"
     BOOST_ARCH="arm"
 fi
 
@@ -145,7 +145,7 @@ writeBjamUserConfig()
     echo Writing usr-config
 
     cat >> tools/build/v2/user-config.jam <<EOF
-using darwin : ${SDK}~${BOOST_TOOL}
+using darwin : ${SDK}~${BOOST_PLAT}
    : ${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/usr/bin/gcc -arch $ARCH -mthumb -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
    : 
    : <architecture>$BOOST_ARCH <target-os>iphone
@@ -179,7 +179,7 @@ bootstrapBoost()
 
 buildBoostForiPhoneOS()
 {
-    ./bjam --prefix="$ROOTDIR" toolset=darwin architecture=$BOOST_ARCH target-os=iphone macosx-version=${BOOST_TOOL}-${IPHONE_SDKVERSION} define=_LITTLE_ENDIAN link=static install
+    ./bjam --prefix="$ROOTDIR" toolset=darwin architecture=$BOOST_ARCH target-os=iphone macosx-version=${BOOST_PLAT}-${IPHONE_SDKVERSION} define=_LITTLE_ENDIAN link=static install
     doneSection
 }
 
