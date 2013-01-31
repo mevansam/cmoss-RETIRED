@@ -69,11 +69,8 @@ fi
 # Should perhaps also consider/use instead: -BOOST_SP_USE_PTHREADS
 
 : ${TARBALLDIR:=`pwd`}
-: ${SRCDIR:=`pwd`/boost/src}
-: ${PREFIXDIR:=`pwd`/boost/prefix}
 
 BOOST_TARBALL=$TARBALLDIR/${BOOST_SOURCE_NAME}.tar.gz
-BOOST_SRC=$SRCDIR/${BOOST_SOURCE_NAME}
 
 #===============================================================================
 
@@ -84,8 +81,6 @@ DEV_DIR=${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/usr/bin/
 echo "BOOST_VERSION:     $BOOST_VERSION"
 echo "BOOST_LIBS:        $BOOST_LIBS"
 echo "BOOST_TARBALL:     $BOOST_TARBALL"
-echo "BOOST_SRC:         $BOOST_SRC"
-echo "PREFIXDIR:         $PREFIXDIR"
 echo "IPHONE_SDKVERSION: $IPHONE_SDKVERSION"
 echo
 
@@ -123,18 +118,21 @@ doneSection()
 cleanEverythingReadyToStart()
 {
     echo Cleaning everything before we start to build...
-    rm -rf $BOOST_SRC
-    rm -rf $PREFIXDIR
+    rm -rf $BOOST_SOURCE_NAME
     doneSection
 }
 
 #===============================================================================
 unpackBoost()
 {
-    echo Unpacking boost into $SRCDIR...
-    [ -d $SRCDIR ]    || mkdir -p $SRCDIR
-    [ -d $BOOST_SRC ] || ( cd $SRCDIR; tar zxvf $BOOST_TARBALL )
-    [ -d $BOOST_SRC ] && echo "    ...unpacked as $BOOST_SRC"
+    echo Unpacking boost into $BOOST_SOURCE_NAME...
+
+    rm -rfv "$BOOST_SOURCE_NAME"
+
+    tar zxvf $BOOST_TARBALL
+    [ -d $BOOST_SOURCE_NAME ] && echo "    ...unpacked as $BOOST_SOURCE_NAME"
+    cd $BOOST_SOURCE_NAME
+
     doneSection
 }
 
@@ -145,8 +143,8 @@ writeBjamUserConfig()
     # You need to do this to point bjam at the right compiler
     # ONLY SEEMS TO WORK IN HOME DIR GRR
     echo Writing usr-config
-  
-    cat >> $BOOST_SRC/tools/build/v2/user-config.jam <<EOF
+
+    cat >> tools/build/v2/user-config.jam <<EOF
 using darwin : ${SDK}~${BOOST_TOOL}
    : ${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer/usr/bin/gcc -arch $ARCH -mthumb -fvisibility=hidden -fvisibility-inlines-hidden $EXTRA_CPPFLAGS
    : 
@@ -164,14 +162,13 @@ inventMissingHeaders()
     # They are supported on the device, so we copy them from x86 SDK to a staging area
     # to use them on ARM, too.
     echo Invent missing headers
-    cp ${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${IPHONE_SDKVERSION}.sdk/usr/include/{crt_externs,bzlib}.h $BOOST_SRC
+    cp ${DEVELOPER}/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator${IPHONE_SDKVERSION}.sdk/usr/include/{crt_externs,bzlib}.h .
 }
 
 #===============================================================================
 
 bootstrapBoost()
 {
-    cd $BOOST_SRC
     BOOST_LIBS_COMMA=$(echo $BOOST_LIBS | sed -e "s/ /,/g")
     echo "Bootstrapping (with libs $BOOST_LIBS_COMMA)"
     ./bootstrap.sh --with-libraries=$BOOST_LIBS_COMMA
@@ -182,8 +179,6 @@ bootstrapBoost()
 
 buildBoostForiPhoneOS()
 {
-    cd $BOOST_SRC
-
     ./bjam --prefix="$ROOTDIR" toolset=darwin architecture=$BOOST_ARCH target-os=iphone macosx-version=${BOOST_TOOL}-${IPHONE_SDKVERSION} define=_LITTLE_ENDIAN link=static install
     doneSection
 }
@@ -192,7 +187,7 @@ buildBoostForiPhoneOS()
 
 scrunchAllLibsTogetherInOneLib()
 {
-    OBJDIR=$BOOST_SRC/tmp/obj
+    OBJDIR=$BOOST_SOURCE_NAME/tmp/obj
     mkdir -p $OBJDIR
     for a in $ROOTDIR/lib/libboost_*.a; do
     
@@ -227,7 +222,3 @@ scrunchAllLibsTogetherInOneLib
 
 echo "Completed successfully"
 
-#===============================================================================
-
-# Clean up
-rm -rf "$TARBALLDIR/boost"
