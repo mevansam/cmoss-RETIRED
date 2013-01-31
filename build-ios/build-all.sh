@@ -149,61 +149,61 @@ do
 	export RANLIB="${DEVROOT}/usr/bin/ranlib"
 
 	# Build minizip
-	${TOPDIR}/build-ios/build-minizip.sh > "${LOGPATH}-minizip.log"
+	# ${TOPDIR}/build-ios/build-minizip.sh > "${LOGPATH}-minizip.log"
 
 	# Build icu
-	${TOPDIR}/build-ios/build-icu.sh > "${LOGPATH}-icu.log"
+	# ${TOPDIR}/build-ios/build-icu.sh > "${LOGPATH}-icu.log"
 
 	# Build c-ares
-	${TOPDIR}/build-ios/build-cares.sh > "${LOGPATH}-cares.log"
+	# ${TOPDIR}/build-ios/build-cares.sh > "${LOGPATH}-cares.log"
 
 	# Build bzip2
-	${TOPDIR}/build-ios/build-bzip2.sh > "${LOGPATH}-bzip2.log"
+	# ${TOPDIR}/build-ios/build-bzip2.sh > "${LOGPATH}-bzip2.log"
 
 	# Build libidn (before curl and gsasl)
-	${TOPDIR}/build-ios/build-libidn.sh > "${LOGPATH}-libidn.log"
+	# ${TOPDIR}/build-ios/build-libidn.sh > "${LOGPATH}-libidn.log"
 
 	# Build libgpg-error
-	${TOPDIR}/build-ios/build-libgpg-error.sh > "${LOGPATH}-libgpg-error.log"
+	# ${TOPDIR}/build-ios/build-libgpg-error.sh > "${LOGPATH}-libgpg-error.log"
 
 	# Build libgcrypt
-	${TOPDIR}/build-ios/build-libgcrypt.sh > "${LOGPATH}-libgcrypt.log"
+	# ${TOPDIR}/build-ios/build-libgcrypt.sh > "${LOGPATH}-libgcrypt.log"
 
 	# Build GnuPG
-	${TOPDIR}/build-ios/build-GnuPG.sh > "${LOGPATH}-GnuPG.log"
+	# ${TOPDIR}/build-ios/build-GnuPG.sh > "${LOGPATH}-GnuPG.log"
 
 	# Build OpenSSL
-	${TOPDIR}/build-ios/build-openssl.sh > "${LOGPATH}-OpenSSL.log"
+	# ${TOPDIR}/build-ios/build-openssl.sh > "${LOGPATH}-OpenSSL.log"
 
 	# Build libssh2
-	${TOPDIR}/build-ios/build-libssh2.sh > "${LOGPATH}-libssh2.log"
+	# ${TOPDIR}/build-ios/build-libssh2.sh > "${LOGPATH}-libssh2.log"
 
 	# Build cURL
-	${TOPDIR}/build-ios/build-cURL.sh > "${LOGPATH}-cURL.log"
+	# ${TOPDIR}/build-ios/build-cURL.sh > "${LOGPATH}-cURL.log"
 
 	# Build libgsasl
-	${TOPDIR}/build-ios/build-libgsasl.sh > "${LOGPATH}-libgsasl.log"
+	# ${TOPDIR}/build-ios/build-libgsasl.sh > "${LOGPATH}-libgsasl.log"
 
     # Build BOOST
     ${TOPDIR}/build-ios/build-boost.sh > "${LOGPATH}-boost.log"
 
 	# Build tinyxml
-	${TOPDIR}/build-ios/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
+	# ${TOPDIR}/build-ios/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
 
 	# Build expat
-	${TOPDIR}/build-ios/build-expat.sh > "${LOGPATH}-expat.log"
+	# ${TOPDIR}/build-ios/build-expat.sh > "${LOGPATH}-expat.log"
 
 	# Build yajl
-	${TOPDIR}/build-ios/build-yajl.sh > "${LOGPATH}-yajl.log"
+	# ${TOPDIR}/build-ios/build-yajl.sh > "${LOGPATH}-yajl.log"
 
 	# Build SQLCipher
-	${TOPDIR}/build-ios/build-sqlcipher.sh > "${LOGPATH}-sqlcipher.log"
+	# ${TOPDIR}/build-ios/build-sqlcipher.sh > "${LOGPATH}-sqlcipher.log"
 
 	# Build SOCI
-	${TOPDIR}/build-ios/build-soci.sh > "${LOGPATH}-soci.log"
+	# ${TOPDIR}/build-ios/build-soci.sh > "${LOGPATH}-soci.log"
 
 	# Build PION
-	${TOPDIR}/build-ios/build-pion.sh > "${LOGPATH}-pion.log"
+	# ${TOPDIR}/build-ios/build-pion.sh > "${LOGPATH}-pion.log"
 
 	# Remove junk
 	rm -rf "${ROOTDIR}/bin"
