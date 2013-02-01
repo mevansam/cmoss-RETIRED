@@ -134,10 +134,10 @@ do
 	export ARCH="${ARCH}"
 
 	export DEVROOT="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
-	export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${CSDK}.sdk"
-	if [ ! -d ${SDKROOT} ]
+	export BUILD_SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${CSDK}.sdk"
+	if [ ! -d ${BUILD_SDKROOT} ]
 	then
-		echo "WARNING! Unable to locate SDK for architecture ${ARCH}: ${SDKROOT}"
+		echo "WARNING! Unable to locate SDK for architecture ${ARCH}: ${BUILD_SDKROOT}"
 		continue
 	fi
 
