@@ -55,9 +55,9 @@ tar xvf "${TOPDIR}/build-droid/droid-boost-patch.tar.gz"
 # ---------
 
 # Make the initial bootstrap
-BOOST_LIBS_COMMA=$(echo $BOOST_LIBS | sed -e "s/ /,/g")
-echo "Bootstrapping (with libs $BOOST_LIBS_COMMA)"
-./bootstrap.sh --with-libraries=$BOOST_LIBS_COMMA
+echo "Performing boost boostrap"
+
+./bootstrap.sh
 if [ $? != 0 ] ; then
 	echo "ERROR: Could not perform boostrap! See $TMPLOG for more info."
 	exit 1
@@ -183,6 +183,8 @@ using android : arm : ${DROIDTOOLS}-g++ :
 EOF
 
 cat >> project-config.jam <<EOF
+libraries = --with-date_time --with-filesystem --with-program_options --with-regex --with-signals --with-system --with-thread --with-iostreams ;
+
 option.set prefix : ${ROOTDIR}/ ;
 option.set exec-prefix : ${ROOTDIR}/bin ;
 option.set libdir : ${ROOTDIR}/lib ;
