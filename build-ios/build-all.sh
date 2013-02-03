@@ -51,6 +51,7 @@ export LIBGSASL_VERSION="1.8.0"
 
 # Project version to use to build boost C++ libraries
 export BOOST_VERSION="1.52.0"
+export BOOST_LIBS="date_time filesystem program_options regex signals system thread iostreams"
 
 # Project version to use to build tinyxml
 export TINYXML_VERSION="2.6.2"
@@ -101,9 +102,6 @@ do
 	rm -rf "${ROOTDIR}"
 	mkdir -p "${ROOTDIR}"
 done
-
-# Build BOOST
-${TOPDIR}/build-ios/build-boost.sh > "${LOGDIR}/boost.log"
 
 for PLATFORM in ${PLATFORMS}
 do
@@ -186,6 +184,9 @@ do
 	# Build libgsasl
 	${TOPDIR}/build-ios/build-libgsasl.sh > "${LOGPATH}-libgsasl.log"
 
+    # Build BOOST
+    ${TOPDIR}/build-ios/build-boost.sh > "${LOGPATH}-boost.log"
+
 	# Build tinyxml
 	${TOPDIR}/build-ios/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
 
@@ -217,10 +218,6 @@ do
 	rm -rf "${ROOTDIR}/obj"
 
 done
-
-# Remove individual boost libraries as all were combined into one 
-# libboost.a (comment this line if individual libraries are required)
-find ${TMPDIR}/build/ios -name "libboost_*.*" -exec rm -f {} \;
 
 # Create Lipo Archives and Framework bundle
 
