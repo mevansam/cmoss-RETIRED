@@ -44,7 +44,7 @@ cp -f ${TOPDIR}/build-ios/Makefile.minizip .
 
 # Build
 export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib -lz -dynamiclib"
-export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -Dfopen64=fopen -Dfseeko64=fseeko -Dftello64=ftello"
+export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -Dfopen64=fopen -Dfseeko64=fseeko -Dftello64=ftello"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
