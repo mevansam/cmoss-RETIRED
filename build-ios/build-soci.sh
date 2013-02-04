@@ -43,7 +43,7 @@ cp -f ${TOPDIR}/build-ios/Makefile.soci-sqlite3 soci-${SOCI_VERSION}/backends/sq
 # Build
 export BIGFILES=-D_FILE_OFFSET_BITS=64
 export LDFLAGS="-Os -fvisibility=hidden -arch ${ARCH} -L${ROOTDIR}/lib"
-export CFLAGS="-Os -fvisibility=hidden -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -g ${BIGFILES}"
+export CFLAGS="-Os -fvisibility=hidden -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -g ${BIGFILES}"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
