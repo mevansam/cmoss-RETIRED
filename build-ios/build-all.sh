@@ -104,9 +104,13 @@ done
 
 # Build BOOST
 ${TOPDIR}/build-ios/build-boost.sh > "${LOGDIR}/boost.log"
+PLATFORMS_BUILT=""
 
 for PLATFORM in ${PLATFORMS}
 do
+	p=${PLATFORM}
+	echo "Building libraries for ${p}..."
+
 	LOGPATH="${LOGDIR}/${PLATFORM}"
 	ROOTDIR="${TMPDIR}/build/ios/${PLATFORM}"
 	CSDK=${SDK}
@@ -137,9 +141,12 @@ do
 	export BUILD_SDKROOT="${BUILD_DEVROOT}/SDKs/${PLATFORM}${CSDK}.sdk"
 	if [ ! -d ${BUILD_SDKROOT} ]
 	then
+		rm -fr ${ROOTDIR}
 		echo "WARNING! Unable to locate SDK for architecture ${ARCH}: ${BUILD_SDKROOT}"
 		continue
 	fi
+
+	PLATFORMS_BUILT="${PLATFORMS_BUILT}${p} "
 
 	export CC="${BUILD_DEVROOT}/usr/bin/gcc"
 	export LD="${BUILD_DEVROOT}/usr/bin/ld"
@@ -218,6 +225,9 @@ do
 
 done
 
+PLATFORMS=`echo ${PLATFORMS_BUILT}`
+echo "Build completed for platforms: ${PLATFORMS}"
+
 # Remove individual boost libraries as all were combined into one 
 # libboost.a (comment this line if individual libraries are required)
 find ${TMPDIR}/build/ios -name "libboost_*.*" -exec rm -f {} \;
@@ -261,7 +271,17 @@ for a in $(cat $BINDIR/libs | sort | uniq); do
 	done
 
 	echo Creating fat archive $BINDIR/lib/$a...
-	$BUILD_DEVROOT/usr/bin/lipo -output "$BINDIR/lib/$a" -create -arch armv6 "$TMPDIR/build/ios/iPhoneOS-V6/lib/$a" -arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7/lib/$a" -arch i386 "$TMPDIR/build/ios/iPhoneSimulator/lib/$a"
+	if [[ "${PLATFORMS}" == *iPhoneOS-V6* ]]
+	then
+		$BUILD_DEVROOT/usr/bin/lipo -output "$BINDIR/lib/$a" -create \
+			-arch armv6 "$TMPDIR/build/ios/iPhoneOS-V6/lib/$a" \
+			-arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7/lib/$a" \
+			-arch i386 "$TMPDIR/build/ios/iPhoneSimulator/lib/$a"
+	else
+		$BUILD_DEVROOT/usr/bin/lipo -output "$BINDIR/lib/$a" -create \
+			-arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7/lib/$a" \
+			-arch i386 "$TMPDIR/build/ios/iPhoneSimulator/lib/$a"
+	fi
 
 done
 rm -f $BINDIR/libs
@@ -302,12 +322,21 @@ ln -s Versions/Current/$FRAMEWORK_NAME $FRAMEWORK_BUNDLE/$FRAMEWORK_NAME
 FRAMEWORK_INSTALL_NAME=$FRAMEWORK_BUNDLE/Versions/$FRAMEWORK_VERSION/$FRAMEWORK_NAME
 
 echo "Lipoing library into $FRAMEWORK_INSTALL_NAME..."
+if [[ "${PLATFORMS}" == *iPhoneOS-V6* ]]
+then
     lipo \
         -create \
         -arch armv6 "$TMPDIR/build/ios/iPhoneOS-V6/lib/${FRAMEWORK_NAME}.a" \
         -arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7/lib/${FRAMEWORK_NAME}.a" \
         -arch i386  "$TMPDIR/build/ios/iPhoneSimulator/lib/${FRAMEWORK_NAME}.a" \
         -output     "$FRAMEWORK_INSTALL_NAME"
+else
+    lipo \
+        -create \
+        -arch armv7 "$TMPDIR/build/ios/iPhoneOS-V7/lib/${FRAMEWORK_NAME}.a" \
+        -arch i386  "$TMPDIR/build/ios/iPhoneSimulator/lib/${FRAMEWORK_NAME}.a" \
+        -output     "$FRAMEWORK_INSTALL_NAME"
+fi
 
 echo "Framework: Copying includes..."
 cp -r "$BINDIR/include/" "$FRAMEWORK_BUNDLE/Headers/"
