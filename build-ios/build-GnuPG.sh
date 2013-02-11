@@ -65,11 +65,11 @@ fi
 
 # Build
 export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-zlib=${SDKROOT} --with-bzip2=${ROOTDIR} --enable-static --disable-shared
+./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-zlib=${BUILD_SDKROOT} --with-bzip2=${ROOTDIR} --enable-static --disable-shared
 mv "Makefile" "Makefile~"
 sed '/checks =/d' "Makefile~" > "Makefile"  # Patch Makefile to disable checks
 make

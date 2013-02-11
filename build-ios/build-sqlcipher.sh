@@ -42,7 +42,7 @@ pushd sqlcipher-${SQLCIPHER_VERSION}
 
 # Build
 export LDFLAGS="-Os -arch ${ARCH} -L${ROOTDIR}/lib"
-export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -DSQLITE_HAS_CODEC"
+export CFLAGS="-Os -D_FILE_OFFSET_BITS=64 -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include -DSQLITE_HAS_CODEC"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
