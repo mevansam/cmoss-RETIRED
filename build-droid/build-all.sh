@@ -87,8 +87,15 @@ mkdir -p $TMPDIR
 
 pushd $TMPDIR
 
-export ANDROID_API_LEVEL="14"
-export ARM_TARGET="armv7"
+if [ -z $ANDROID_API_LEVEL ]
+then
+    export ANDROID_API_LEVEL="14"
+fi
+
+if [ -z $ARM_TARGET ]
+then
+    export ARM_TARGET="armv7"
+fi
 
 if [ -z $TOOLCHAIN_VERSION ]
 then
