@@ -87,9 +87,20 @@ mkdir -p $TMPDIR
 
 pushd $TMPDIR
 
-export ANDROID_API_LEVEL="14"
-export ARM_TARGET="armv7"
-export TOOLCHAIN_VERSION="4.7"
+if [ -z $ANDROID_API_LEVEL ]
+then
+    export ANDROID_API_LEVEL="14"
+fi
+
+if [ -z $ARM_TARGET ]
+then
+    export ARM_TARGET="armv7"
+fi
+
+if [ -z $TOOLCHAIN_VERSION ]
+then
+	export TOOLCHAIN_VERSION="4.7"
+fi
 
 # Platforms to build for (changing this may break the build)
 PLATFORMS="arm-linux-androideabi"
