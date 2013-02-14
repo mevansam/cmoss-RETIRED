@@ -51,7 +51,7 @@ export LIBGSASL_VERSION="1.8.0"
 
 # Project version to use to build boost C++ libraries
 export BOOST_VERSION="1.52.0"
-export BOOST_LIBS="date_time filesystem program_options regex signals system thread iostreams"
+export BOOST_LIBS="chrono context date_time exception filesystem graph graph_parallel iostreams mpi program_options python random regex serialization signals system test thread timer wave"
 
 # Project version to use to build tinyxml
 export TINYXML_VERSION="2.6.2"
