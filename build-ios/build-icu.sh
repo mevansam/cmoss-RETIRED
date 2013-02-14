@@ -52,7 +52,7 @@ fi
 ICU_FLAGS="-I${TMPDIR}/icu/source/common/ -I${TMPDIR}/icu/source/tools/tzcode/"
 
 export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -miphoneos-version-min=2.2 ${ICU_FLAGS} -I${ROOTDIR}/include"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 ${ICU_FLAGS} -I${ROOTDIR}/include"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 

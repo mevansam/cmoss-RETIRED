@@ -40,7 +40,7 @@ pushd "libidn-${LIBIDN_VERSION}"
 
 # Build
 export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -isysroot ${SDKROOT} -miphoneos-version-min=2.2 ${ICU_FLAGS} -I${ROOTDIR}/include"
+export CFLAGS="-Os -arch ${ARCH} -pipe -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 ${ICU_FLAGS} -I${ROOTDIR}/include"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
