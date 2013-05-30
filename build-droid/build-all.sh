@@ -39,6 +39,9 @@ export LIBGPG_ERROR_VERSION="1.10"
 export LIBGCRYPT_VERSION="1.5.0"
 export GNUPG_VERSION="1.4.13"
 
+#Cypherpunks Off-the-Record messaging library
+export LIBOTR_VERSION="4.0.0"
+
 # Project versions to use to build openssl (changing this may break the build)
 export OPENSSL_VERSION="1.0.1"
 
@@ -160,6 +163,9 @@ do
 
 	# Build OpenSSL
 	${TOPDIR}/build-droid/build-openssl.sh > "${LOGPATH}-OpenSSL.log"
+
+	# Build libotr4
+	${TOPDIR}/build-droid/build-libotr.sh > "${LOGPATH}-libotr.log"
 
 	# Build libssh2
 	${TOPDIR}/build-droid/build-libssh2.sh > "${LOGPATH}-libssh2.log"

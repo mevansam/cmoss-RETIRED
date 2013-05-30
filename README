@@ -16,6 +16,7 @@ The CMOSS scripts can be used to build the following C/C++ Open Source Software 
 * boost - http://www.boost.org/ - C++ utilities
 * soci - http://soci.sourceforge.net/ - generic C++ database API
 * pion : http://pion.org/ - C++ HTTP API
+* libotr4 : http://www.cypherpunks.ca/otr/ - Off-the-Record Messaging 
 
 The android kernel already provides some of these shared libraries so check if they are available before including them in your NDK project. For example both openssl and icu are part of the Android distribution. 
 
