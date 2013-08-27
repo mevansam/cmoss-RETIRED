@@ -54,6 +54,7 @@ These build scripts were tested on a Mac OS X 10 with the following Mac ports:
   ncursesw @5.8_0 (active)
   openssl @1.0.0d_0 (active)
   wget @1.12_3+ssl (active)
+  libtool @2.4.2 (active)
   zlib @1.2.5_0 (active)
 
 The Android scripts should work in a Linux environment but have not been tested.
