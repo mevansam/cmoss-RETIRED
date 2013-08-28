@@ -80,7 +80,7 @@ EOF
 
 mv "build/src/cmake_install.cmake" "build/src/cmake_install.cmake~"
 sed 's/\.dylib/\.so/g' build/src/cmake_install.cmake~ > build/src/cmake_install.cmake~1
-sed 's/\".*\/libyajl\.2\.0\.1\.so\"//' build/src/cmake_install.cmake~1 > build/src/cmake_install.cmake~2
+sed 's/\".*\/libyajl\.2\.0\.3\.so\"//' build/src/cmake_install.cmake~1 > build/src/cmake_install.cmake~2
 sed 's/\".*\/libyajl\.2\.so\"//' build/src/cmake_install.cmake~2 > build/src/cmake_install.cmake
 
 cat > Makefile <<EOF
