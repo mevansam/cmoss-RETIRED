@@ -59,7 +59,8 @@ export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 
 mv "Makefile" "Makefile~"
 sed "s/\.so\.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)/\.so/" Makefile~ > Makefile~1
-sed "s/\$(SHLIB_MAJOR).\$(SHLIB_MINOR)//" Makefile~1 > Makefile
+sed "s/all install_docs/all/" Makefile~1 > Makefile~2
+sed "s/\$(SHLIB_MAJOR).\$(SHLIB_MINOR)//" Makefile~2 > Makefile
 
 make CC="${CC}" CFLAG="${CFLAGS}" SHARED_LDFLAGS="${LDFLAGS}"
 make install
