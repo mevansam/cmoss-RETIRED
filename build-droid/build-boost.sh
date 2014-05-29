@@ -36,14 +36,14 @@ set -e
 BOOST_SOURCE_NAME=boost_${BOOST_VERSION//./_}
 
 # Download source
-if [ ! -e "${BOOST_SOURCE_NAME}.tar.gz" ]
+if [ ! -e "${BOOST_SOURCE_NAME}.tar.bz2" ]
 then
-  curl $PROXY -O "http://surfnet.dl.sourceforge.net/project/boost/boost/${BOOST_VERSION}/${BOOST_SOURCE_NAME}.tar.gz"
+  curl $PROXY -O -L "http://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION}/${BOOST_SOURCE_NAME}.tar.bz2"
 fi
 
 # Extract source
 rm -rf "${BOOST_SOURCE_NAME}"
-tar xvf "${BOOST_SOURCE_NAME}.tar.gz"
+tar xvjf "${BOOST_SOURCE_NAME}.tar.bz2"
 
 pushd "${BOOST_SOURCE_NAME}"
 tar xvf "${TOPDIR}/build-droid/droid-boost-patch.tar.gz"
