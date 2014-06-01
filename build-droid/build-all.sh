@@ -2,7 +2,7 @@
 set -e
 
 export BUILD_ALL=true
-if ! source ${TOPDIR}/build-droid/env-setup.sh $@
+if ! source ./env-setup.sh $@
 then
     exit 1
 fi
