@@ -194,7 +194,7 @@ do
 	# Build PION
 	${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
 
-	# Build PION
+	# Build Protobuf
 	${TOPDIR}/build-droid/build-protobuf.sh> "${LOGPATH}-protobuf.log"
 
 	# Remove junk
