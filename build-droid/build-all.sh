@@ -202,25 +202,20 @@ do
 	rm -rf "${ROOTDIR}/share"
 	rm -rf "${ROOTDIR}/openssl.cnf"
 
+    mkdir -p ${BINDIR}/include
+    cp -r ${ROOTDIR}/include ${BINDIR}/
+
+    mkdir -p ${BINDIR}/lib/${ARM_TARGET}
+
+
+    cp ${ROOTDIR}/lib/*.a ${BINDIR}/lib/${ARM_TARGET}
+    cp ${ROOTDIR}/lib/*.la ${BINDIR}/lib/${ARM_TARGET}
+
+    (cd ${ROOTDIR}/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
+    #(cd ${ROOTDIR}/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
+
+    echo "**** Android c/c++ open source ${PLATFORM} build completed ****"
 done
-
-mkdir -p ${BINDIR}/include
-cp -r ${TMPDIR}/build/droid/arm-linux-androideabi/include ${BINDIR}/
-
-#mkdir -p ${BINDIR}/lib/x86
-mkdir -p ${BINDIR}/lib/${ARM_TARGET}
-
-#cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/x86
-#cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.la ${BINDIR}/lib/x86
-
-#(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
-#(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
-
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.a ${BINDIR}/lib/${ARM_TARGET}
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.la ${BINDIR}/lib/${ARM_TARGET}
-
-(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
-#(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
 
 echo "**** Android c/c++ open source build completed ****"
 
