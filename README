@@ -39,6 +39,14 @@ cd [cmoss root path]/build-droid
 
 (scripts were tested with Android NDK r8d)
 
+To build a single project:
+cd [cmoss root path]/build-droid
+source env-setup.sh [path to Android NDK] [proxy_host:proxy_port]
+cd $TMPDIR
+$TOPDIR/build-droid/build-[package].sh
+
+The output libs should then be in $ROOTDIR/lib
+
 These build scripts were tested on a Mac OS X 10 with the following Mac ports:
 
   cmake @2.8.4_0 (active)
