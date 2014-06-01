@@ -74,6 +74,9 @@ export SOCI_VERSION="3.1.0"
 # Project version to use to build pion (changing this may break the build)
 export PION_VERSION="master"
 
+# Project version to use to build protobuf (changing this may break the build)
+export PROTOBUF_VERSION="2.5.0"
+
 # Create dist folder
 export BUILDDIR=$(dirname $0)
 
