@@ -117,7 +117,7 @@ do
 done
 
 # Set Up single build env var
-if [ -n "$BUILD_ALL"]
+if [ -n "$BUILD_ALL" ]
 then
     echo "Setting up single build env variables"
     PLATFORM="arm-linux-androideabi"
