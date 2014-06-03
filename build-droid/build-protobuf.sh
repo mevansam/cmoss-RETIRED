@@ -40,30 +40,32 @@ tar xvjf "protobuf-${PROTOBUF_VERSION}.tar.bz2"
 # Build
 pushd "protobuf-${PROTOBUF_VERSION}"
 export CC=${DROIDTOOLS}-gcc
-#export LD=${DROIDTOOLS}-ld
-#export CPP=${DROIDTOOLS}-cpp
-#export CXX=${DROIDTOOLS}-g++
-#export AR=${DROIDTOOLS}-ar
-#export AS=${DROIDTOOLS}-as
-#export NM=${DROIDTOOLS}-nm
-#export STRIP=${DROIDTOOLS}-strip
-#export CXXCPP=${DROIDTOOLS}-cpp
-#export RANLIB=${DROIDTOOLS}-ranlib
-#export LDFLAGS="-Os -fpic -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib"
+export LD=${DROIDTOOLS}-ld
+export CPP=${DROIDTOOLS}-cpp
+export CXX=${DROIDTOOLS}-g++
+export AR=${DROIDTOOLS}-ar
+export AS=${DROIDTOOLS}-as
+export NM=${DROIDTOOLS}-nm
+export STRIP=${DROIDTOOLS}-strip
+export CXXCPP=${DROIDTOOLS}-cpp
+export RANLIB=${DROIDTOOLS}-ranlib
+export LDFLAGS="-Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${ROOTDIR}/lib"
+export CFLAGS="-fPIC -DANDROID -nostdlib"
 #export CFLAGS="-Os -I${ROOTDIR}/include -I${SYSROOT}/usr/include"
-#export CXXFLAGS="-Os -I${ROOTDIR}/include -I${SYSROOT}/usr/include -DNDEBUG"
-#export LIBS="-lc"
-./configure --with-protoc=protoc --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-sysroot=$SYSROOT CC=$CC --enable-cross-compile
+export CPPFLAGS="-I${SYSROOT}/usr/include -DNDEBUG"
+export CXXFLAGS="-I${SYSROOT}/usr/include -DNDEBUG"
+export LIBS="-lc"
 
-# make CC="${CC}" AR="${AR}" RANLIB="${RANLIB}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+./configure --with-protoc=protoc --with-zlib=no --host=arm-eabi --prefix=${ROOTDIR} --with-sysroot=${SYSROOT} -enable-cross-compile 
+
+mv "src/Makefile" "src/Makefile~"
+sed "s/all-am: Makefile \$(LTLIBRARIES) \$(PROGRAMS) \$(DATA) \$(HEADERS)/all-am: Makefile \$(LTLIBRARIES) \$(HEADERS)/" src/Makefile~ > src/Makefile~1
+sed "s/lib_LTLIBRARIES = libprotobuf-lite\.la libprotobuf\.la libprotoc\.la/lib_LTLIBRARIES = libprotobuf-lite\.la/" src/Makefile~1 > src/Makefile~2
+sed "s/install-data-am: install-nobase_dist_protoDATA/install-data-am: /" src/Makefile~2 > src/Makefile~3
+sed "s/install-exec-am: install-binPROGRAMS install-libLTLIBRARIES/install-exec-am: install-libLTLIBRARIES/" src/Makefile~3 > src/Makefile
+
 make
 make install
-pushd ${ROOTDIR}/lib
-mv libprotobuf.so.8.0.0 libprotobuf.so
-mv libprotobuf-lite.so.8.0.0 libprotobuf-lite.so
-mv libprotoc.so.8.0.0 libprotoc.so
-rm libprotoc.so.8 libprotobuf.so.8 libprotobuf-lite.so.8
-popd
 
 popd
 
