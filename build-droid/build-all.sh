@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-export BUILD_ALL=true
+export BUILD_ALL="true"
 if ! source ./env-setup.sh $@
 then
     exit 1
