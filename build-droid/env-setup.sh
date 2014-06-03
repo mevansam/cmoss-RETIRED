@@ -136,8 +136,9 @@ then
 
     export ROOTDIR=${ROOTDIR}
     export PLATFORM=${PLATFORM}
-    export DROIDTOOLS=${TMPDIR}/droidtoolchains/${PLATFORM}/bin/${PLATFORM}
-    export SYSROOT=${TMPDIR}/droidtoolchains/${PLATFORM}/sysroot
+    export TOOLCHAIN=${TMPDIR}/droidtoolchains/${PLATFORM}
+    export DROIDTOOLS=${TOOLCHAIN}/bin/${PLATFORM}
+    export SYSROOT=${TOOLCHAIN}/sysroot
 fi
 
 popd
