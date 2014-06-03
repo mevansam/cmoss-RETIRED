@@ -72,6 +72,9 @@ export SOCI_VERSION="3.1.0"
 # Project version to use to build pion (changing this may break the build)
 export PION_VERSION="master"
 
+# Project version to use to build protobuf (changing this may break the build)
+export PROTOBUF_VERSION="2.5.0"
+
 # Create dist folder
 BUILDDIR=$(dirname $0)
 
@@ -190,6 +193,9 @@ do
 
 	# Build PION
 	${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
+
+	# Build Protobuf
+	${TOPDIR}/build-droid/build-protobuf.sh> "${LOGPATH}-protobuf.log"
 
 	# Remove junk
 	rm -rf "${ROOTDIR}/bin"
