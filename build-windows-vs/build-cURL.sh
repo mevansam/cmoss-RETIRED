@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-# Copyright (c) 2010, Pierre-Olivier Latour
+# Copyright (c) 2015, dorgon(horizon-studio)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@ set -e
 #     * Redistributions in binary form must reproduce the above copyright
 #       notice, this list of conditions and the following disclaimer in the
 #       documentation and/or other materials provided with the distribution.
-#     * The name of Pierre-Olivier Latour may not be used to endorse or
+#     * The name of dorgon may not be used to endorse or
 #       promote products derived from this software without specific prior
 #       written permission.
 #
@@ -25,45 +25,39 @@ set -e
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 # Download source
-if [ ! -e "icu4c-${ICU_VERSION//./_}-src.tgz" ]
+if [ ! -e "curl-${CURL_VERSION}.tar.gz" ]
 then
-	curl $PROXY -O "http://download.icu-project.org/files/icu4c/${ICU_VERSION}/icu4c-${ICU_VERSION//./_}-src.tgz"
+  curl $PROXY -O "http://curl.haxx.se/download/curl-${CURL_VERSION}.tar.gz"
 fi
 
 # Extract source
-rm -rf "icu"
-tar xf "icu4c-${ICU_VERSION//./_}-src.tgz"
+rm -rf "curl-${CURL_VERSION}"
+tar xvf "curl-${CURL_VERSION}.tar.gz"
 
 # Build
+pushd "curl-${CURL_VERSION}"
 
-HOSTBUILD=${TMPDIR}/icu-hostbuild
-if [ ! -d ${HOSTBUILD} ]
-then
-	mkdir -p ${HOSTBUILD}
-	pushd ${HOSTBUILD}
-	#./configure
-	#make
-	popd
-fi
+cmake -G "${SDK_NAME}" -DCURL_ZLIB=ON \
+		-DZLIB_INCLUDE_DIR=${ROOTDIR}/include/zlib \
+		-DZLIB_LIBRARY=${ROOTDIR}/lib/zlib/Release/zlibstatic.lib \
+		-DCURL_DISABLE_VERBOSE_STRINGS=ON \
+		-DENABLE_IPV6=ON \
+		-DENABLE_THREADED_RESOLVER=ON
+#-Dwith-zlib=${ROOTDIR}/zlib -Denable-static \
+#            -Ddisable-shared \
+#            -Ddisable-verbose \
+#            -Denable-threaded-resolver \
+#            -Denable-libgcc \
+ #           -Denable-ipv6 
+CONFIG=Release
+cmake --build . --config ${CONFIG}
 
-ICU_FLAGS="-I${TMPDIR}/icu/source/common/ -I${TMPDIR}/icu/source/tools/tzcode/"
-
-export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=4.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 ${ICU_FLAGS} -I${ROOTDIR}/include"
-export CPPFLAGS="${CFLAGS}"
-export CXXFLAGS="${CFLAGS}"
-
-pushd "icu/source"
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} \
-			--enable-static --disable-shared --enable-extras=no --enable-strict=no --enable-tests=no --enable-samples=no \
-			--enable-dyload=no --with-data-packaging=archive #\
-#			--with-cross-build="${HOSTBUILD}"
-
-make VERBOSE=1
-make install
+mkdir -p ${ROOTDIR}/include/curl/ || true
+cp include/curl/*.h ${ROOTDIR}/include/curl/
+mkdir -p ${ROOTDIR}/lib/curl/${CONFIG} || true
+cp lib/${CONFIG}/* ${ROOTDIR}/lib/curl/${CONFIG}
 popd
 
 # Clean up
-rm -rf "icu"
+#rm -rf "curl-${CURL_VERSION}"

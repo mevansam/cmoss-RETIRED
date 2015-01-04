@@ -38,7 +38,7 @@ tar zxvf "openssl-${OPENSSL_VERSION}.tar.gz"
 pushd "openssl-${OPENSSL_VERSION}"
 
 # Build
-export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -dynamiclib"
+export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=6.1 -dynamiclib"
 export CFLAGS="-Os -D_DARWIN_C_SOURCE -UOPENSSL_BN_ASM_PART_WORDS -arch ${ARCH} -isysroot ${BUILD_SDKROOT}"
 
 ./config no-shared no-asm no-krb5 no-gost zlib --openssldir=${ROOTDIR}

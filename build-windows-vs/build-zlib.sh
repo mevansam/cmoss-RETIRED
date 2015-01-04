@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Copyright (c) 2010, Pierre-Olivier Latour
+# Copyright (c) 2015, dorgon(horizon-studio)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@ set -e
 #     * Redistributions in binary form must reproduce the above copyright
 #       notice, this list of conditions and the following disclaimer in the
 #       documentation and/or other materials provided with the distribution.
-#     * The name of Pierre-Olivier Latour may not be used to endorse or
+#     * The name of dorgon may not be used to endorse or
 #       promote products derived from this software without specific prior
 #       written permission.
 #
@@ -26,44 +26,30 @@ set -e
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
+FILE_FOLDER="zlib-${ZLIB_VERSION}"
+SUFFIX=".tar.gz"
+ZIP_FILE=${FILE_FOLDER}${SUFFIX}
 # Download source
-if [ ! -e "icu4c-${ICU_VERSION//./_}-src.tgz" ]
+if [ ! -e "http://zlib.net/${ZIP_FILE}" ]
 then
-	curl $PROXY -O "http://download.icu-project.org/files/icu4c/${ICU_VERSION}/icu4c-${ICU_VERSION//./_}-src.tgz"
+  curl $PROXY -O "http://zlib.net/${ZIP_FILE}"
 fi
 
 # Extract source
-rm -rf "icu"
-tar xf "icu4c-${ICU_VERSION//./_}-src.tgz"
+rm -rf "${FILE_FOLDER}"
+tar xvf "${ZIP_FILE}"
 
 # Build
-
-HOSTBUILD=${TMPDIR}/icu-hostbuild
-if [ ! -d ${HOSTBUILD} ]
-then
-	mkdir -p ${HOSTBUILD}
-	pushd ${HOSTBUILD}
-	#./configure
-	#make
-	popd
-fi
-
-ICU_FLAGS="-I${TMPDIR}/icu/source/common/ -I${TMPDIR}/icu/source/tools/tzcode/"
-
-export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=4.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 ${ICU_FLAGS} -I${ROOTDIR}/include"
-export CPPFLAGS="${CFLAGS}"
-export CXXFLAGS="${CFLAGS}"
-
-pushd "icu/source"
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} \
-			--enable-static --disable-shared --enable-extras=no --enable-strict=no --enable-tests=no --enable-samples=no \
-			--enable-dyload=no --with-data-packaging=archive #\
-#			--with-cross-build="${HOSTBUILD}"
-
-make VERBOSE=1
-make install
+pushd "${FILE_FOLDER}"
+cmake -G "${SDK_NAME}" #-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${ROOTDIR}
+CONFIG=Release
+cmake --build . --config ${CONFIG}
+mkdir -p ${ROOTDIR}/include/zlib/ || true
+cp *.h ${ROOTDIR}/include/zlib/
+mkdir -p ${ROOTDIR}/lib/zlib/${CONFIG} || true
+cp ${CONFIG}/* ${ROOTDIR}/lib/zlib/${CONFIG}
 popd
 
 # Clean up
-rm -rf "icu"
+rm -rf "${FILE_FOLDER}"
