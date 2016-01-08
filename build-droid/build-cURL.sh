@@ -39,7 +39,7 @@ tar xvf "curl-${CURL_VERSION}.tar.gz"
 # Build
 pushd "curl-${CURL_VERSION}"
 
-DROID_GCC_LIBS=${TMPDIR}/droidtoolchains/${PLATFORM}/lib/gcc/arm-linux-androideabi/4.4.3
+DROID_GCC_LIBS=${TMPDIR}/droidtoolchains/${PLATFORM}/lib/gcc/arm-linux-androideabi/${TOOLCHAIN_VERSION}
 
 export CC=${DROIDTOOLS}-gcc
 export LD=${DROIDTOOLS}-ld
@@ -53,18 +53,24 @@ export CXXCPP=${DROIDTOOLS}-cpp
 export RANLIB=${DROIDTOOLS}-ranlib
 
 #export LDFLAGS="-Os -fPIC -nostdlib -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${DROID_GCC_LIBS} -L${ROOTDIR}/lib -lcrypto -lssl -lgpg-error -lgcrypt -lgcc -lc"
-export LDFLAGS="-Os -fPIC -nostdlib -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${DROID_GCC_LIBS} -L${ROOTDIR}/lib -lcrypto -lssl -lgcc -lc"
-
+export LDFLAGS="-Os -fPIC -nostdlib -Wl,-rpath-link=${SYSROOT}/usr/lib -L${SYSROOT}/usr/lib -L${DROID_GCC_LIBS} -L${ROOTDIR}/lib -lgcc -lc"
 export CFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
 export CXXFLAGS="-Os -pipe -isysroot ${SYSROOT} -I${ROOTDIR}/include"
-
+export LIBS="-lssl -lcrypto"
 #./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-ssl=${ROOTDIR} --enable-ares=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --enable-optimize --enable-nonblocking --disable-verbose --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-manual --disable-ipv6 --disable-soname-bump --without-polarssl --without-gnutls --without-cyassl --without-axtls
 
 #./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-ssl=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --enable-optimize --enable-nonblocking --disable-ares --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-ipv6 --disable-soname-bump --without-polarssl --without-gnutls --without-cyassl --without-axtls --disable-manual --disable-verbose
 
 #./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-ssl=${ROOTDIR} --with-random=/dev/urandom --enable-optimize --enable-nonblocking --enable-verbose --disable-ares --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-ipv6 --disable-soname-bump --without-polarssl --without-gnutls --without-cyassl --without-axtls --without-libssh2 --disable-manual
 
-./configure --host=${ARCH}-android-linux --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} --with-ssl=${ROOTDIR} --with-random=/dev/urandom --enable-optimize --enable-nonblocking --disable-ares --disable-ftp --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-sspi --disable-ipv6 --disable-soname-bump --without-polarssl --without-gnutls --without-cyassl --without-axtls --without-libssh2 --disable-manual --disable-verbose
+./configure --host=${ARCHITECTURE}-android-linux \
+		    --target=${PLATFORM} --prefix=${ROOTDIR} --with-zlib=${ROOTDIR} \
+		    --with-ssl=${ROOTDIR} --enable-static \
+            --disable-shared \
+            --disable-verbose \
+            --enable-threaded-resolver \
+            --enable-libgcc \
+            --enable-ipv6 \
 
 # Fix libtool to not create versioned shared libraries
 mv "libtool" "libtool~"

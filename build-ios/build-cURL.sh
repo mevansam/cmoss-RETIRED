@@ -38,12 +38,29 @@ tar zxvf "curl-${CURL_VERSION}.tar.gz"
 pushd "curl-${CURL_VERSION}"
 
 # Build
-export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=2.2 -L${ROOTDIR}/lib"
-export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=2.2 -I${ROOTDIR}/include"
+export LDFLAGS="-Os -arch ${ARCH} -Wl,-dead_strip -miphoneos-version-min=6.1 -L${ROOTDIR}/lib"
+export CFLAGS="-Os -arch ${ARCH} -pipe -no-cpp-precomp -isysroot ${BUILD_SDKROOT} -miphoneos-version-min=6.1 -I${ROOTDIR}/include"
 export CPPFLAGS="${CFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 
-./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-zlib=${BUILD_SDKROOT}/usr --with-ssl=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom --disable-shared --enable-static --disable-ipv6 --disable-manual --disable-verbose  # Work around curl tool not linking against static libssh2 by only building library and headers
+HOST=${ARCH}
+if [[ "${HOST}" == "arm64" ]];
+then
+HOST="arm"
+fi
+echo HOST: ${HOST}
+
+
+#./configure --host=${ARCH}-apple-darwin --prefix=${ROOTDIR} --with-zlib=${BUILD_SDKROOT}/usr \
+#--with-ssl=${ROOTDIR} --with-libssh2=${ROOTDIR} --with-random=/dev/urandom 
+#--disable-shared --enable-static --enable-ipv6 --disable-manual --disable-verbose  # Work around curl tool not linking against static libssh2 by only building library and headers
+./configure --host=${HOST}-apple-darwin --prefix=${ROOTDIR} \
+			--with-darwinssl \
+			--enable-static \
+			--disable-shared \
+			--enable-threaded-resolver \
+			--disable-verbose \
+			--enable-ipv6 
 pushd "lib"
 make
 make install

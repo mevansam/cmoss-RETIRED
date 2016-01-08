@@ -7,7 +7,7 @@
 bin/
 tmp/
 tmp.*/
-log/
+/log
 
 droid-testapp/bin
 droid-testapp/gen

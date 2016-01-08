@@ -3,8 +3,11 @@ set -e
 
 # Retrieve NDK path to use
 NDK=$1
+echo NDK path="$NDK"
+
 if [ "${NDK}" == "" ] || [ ! -e ${NDK}/build/tools/make-standalone-toolchain.sh ]
 then
+  cat ${NDK}/build/tools/make-standalone-toolchain.sh
   echo "Please specify a valid NDK path."
   exit 1
 fi
@@ -40,19 +43,22 @@ export LIBGCRYPT_VERSION="1.5.0"
 export GNUPG_VERSION="1.4.13"
 
 # Project versions to use to build openssl (changing this may break the build)
-export OPENSSL_VERSION="1.0.1"
+export OPENSSL_VERSION="1.0.2e"
 
 # Project versions to use to build libssh2 and cURL (changing this may break the build)
 export LIBSSH2_VERSION="1.3.0"
-export CURL_VERSION="7.28.1"
+export CURL_VERSION="7.46.0"
 
 # Project Version to use to build libgsasl
 export LIBGSASL_VERSION="1.8.0"
 
 # Project version to use to build boost C++ libraries
-export BOOST_VERSION="1.52.0"
-export BOOST_LIBS="chrono context date_time exception filesystem graph graph_parallel iostreams mpi program_options random regex serialization signals system test thread timer wave"
-
+export BOOST_VERSION="1.59.0"
+#python
+export BOOST_LIBS="atomic chrono container context coroutine \
+				   coroutine2 date_time exception filesystem graph graph_parallel iostreams \
+				   locale log math mpi program_options  \
+				   random regex serialization signals system test thread timer wave"
 # Project version to use to build tinyxml
 export TINYXML_VERSION="2.6.2"
 export TINYXML_FILE="2_6_2"
@@ -67,7 +73,7 @@ export YAJL_VERSION="2.0.3"
 export SQLCIPHER_VERSION="2.1.1"
 
 # Project versions to use for SOCI (Sqlite3 C++ database library)
-export SOCI_VERSION="3.1.0"
+export SOCI_VERSION="3.2.2"
 
 # Project version to use to build pion (changing this may break the build)
 export PION_VERSION="master"
@@ -82,145 +88,232 @@ export LOGDIR=$TOPDIR/log/droid
 export TMPDIR=$TOPDIR/tmp
 popd
 
-rm -rf $LOGDIR
+rm -rf $LOGDIR || true
 mkdir -p $LOGDIR
 mkdir -p $TMPDIR
 
 pushd $TMPDIR
-
-export ANDROID_API_LEVEL="14"
-export ARM_TARGET="armv7"
+#http://stackoverflow.com/questions/27091001/how-to-use-mkfifo-using-androids-ndk/27093163#27093163
+#set ndk api level to 19, because 3~19's signature is same but api-level 21 change some
+export ANDROID_API_LEVEL="19"
+#export ARM_TARGET="armv5te"
 
 if [ -z $TOOLCHAIN_VERSION ]
 then
-	export TOOLCHAIN_VERSION="4.7"
+	export TOOLCHAIN_VERSION="4.9"
 fi
 
+
+echo ANDROID_API_LEVEL:           ${ANDROID_API_LEVEL}
+echo TOOLCHAIN_VERSION:           ${TOOLCHAIN_VERSION}
+
 # Platforms to build for (changing this may break the build)
-PLATFORMS="arm-linux-androideabi"
+#PLATFORMS="arm-linux-androideabi x86"
+#PLATFORMS="arm-linux-androideabi"
+#TARGETS="arm-linux-androideabi"
+
+TARGETS="armeabi armeabi-v7a x86"
 
 # Create tool chains for each supported platform
-for PLATFORM in ${PLATFORMS}
+for TARGET in ${TARGETS}
 do
-	echo "Creating toolchain for platform ${PLATFORM}..."
+	echo "Checking toolchain for platform ${TARGET}..."
 
-	if [ ! -d "${TMPDIR}/droidtoolchains/${PLATFORM}" ]
+	if [ "${TARGET}" == "x86" ]
 	then
+		PLATFORM=x86
+	else
+		PLATFORM=arm-linux-androideabi
+	fi
+
+	if [ ! -d "${TMPDIR}/droidtoolchains/${TARGET}" ]
+	then
+		echo "Creating toolchain for platform ${TARGET}..."
 		$NDK/build/tools/make-standalone-toolchain.sh \
 			--verbose \
 			--platform=android-${ANDROID_API_LEVEL} \
 			--toolchain=${PLATFORM}-${TOOLCHAIN_VERSION} \
-			--install-dir=${TMPDIR}/droidtoolchains/${PLATFORM}
+			--install-dir=${TMPDIR}/droidtoolchains/${TARGET}
 	fi
 done
 
 # Build projects
-for PLATFORM in ${PLATFORMS}
+for TARGET in ${TARGETS}
 do
-	LOGPATH="${LOGDIR}/${PLATFORM}"
-	ROOTDIR="${TMPDIR}/build/droid/${PLATFORM}"
+
+	if [ "${TARGET}" == "x86" ]
+	then
+		TOOL_PREFIX=i686-linux-android
+	else
+		TOOL_PREFIX=arm-linux-androideabi
+	fi
+	LOGPATH="${LOGDIR}/${TARGET}"
+	ROOTDIR="${TMPDIR}/build/droid/${TARGET}"
 
 	mkdir -p "${ROOTDIR}"
 
-	if [ "${PLATFORM}" == "arm-linux-androideabi" ]
+
+	if [ "${TARGET}" == "armeabi" ]
 	then
-		export ARCH=${ARM_TARGET}
+		ARCH="armv5te"
+		ARCHITECTURE="arm"
+		ADDRESS_MODEL=32
+		ABI=aapcs
+		APP_ABI=armeabi
+		TOOLSET=armv5
+	elif [ "${TARGET}" == "armeabi-v7a" ]
+	then
+		ARCH="armv7-a"
+		ARCHITECTURE="arm"
+		ADDRESS_MODEL=32
+		ABI=aapcs
+		APP_ABI=armeabi-v7a
+		TOOLSET=armv7
+	elif [ "${TARGET}" == "x86" ]
+	then
+		ARCH="i686"
+		ARCHITECTURE="x86"
+		ADDRESS_MODEL=32
+		ABI=sysv
+		APP_ABI=x86
+		TOOLSET=i686
 	else
-		export ARCH="x86"
+		echo "${TARGET} not supported"
 	fi
+	
 
 	export ROOTDIR=${ROOTDIR}
-	export PLATFORM=${PLATFORM}
-	export DROIDTOOLS=${TMPDIR}/droidtoolchains/${PLATFORM}/bin/${PLATFORM}
-	export SYSROOT=${TMPDIR}/droidtoolchains/${PLATFORM}/sysroot
+	export DROIDTOOLS=${TMPDIR}/droidtoolchains/${TARGET}/bin/${TOOL_PREFIX}
+	export SYSROOT=${TMPDIR}/droidtoolchains/${TARGET}/sysroot
+	export ARCH="${ARCH}"
+	export ARCHITECTURE="${ARCHITECTURE}"
+	export ADDRESS_MODEL="${ADDRESS_MODEL}"
+	export ABI="${ABI}"
+	export APP_ABI="${APP_ABI}"
+	export TOOLSET="${TOOLSET}"
+
+	echo ROOTDIR:               ${ROOTDIR}
+	echo TOOL_PREFIX:           ${TOOL_PREFIX}
+	echo DROIDTOOLS:            ${DROIDTOOLS}
+	echo SYSROOT:			 	${SYSROOT}
+	echo ARCH:			 		${ARCH}
+	echo ARCHITECTURE:			${ARCHITECTURE}
+	echo ADDRESS_MODEL:			${ADDRESS_MODEL}
+	echo ABI:					${ABI}
+	echo APP_ABI:				${APP_ABI}
+	echo TOOLSET:				${TOOLSET}
+	export CC="${DROIDTOOLS}-gcc"
+	export LD="${DROIDTOOLS}-ld"
+	export CXX="${DROIDTOOLS}-g++"
+	export AR="${DROIDTOOLS}-ar"
+	export AS="${DROIDTOOLS}-as"
+	export NM="${DROIDTOOLS}-nm"
+	export STRIP="${DROIDTOOLS}-strip"
+	export RANLIB="${DROIDTOOLS}-ranlib"
+
+	echo CC:             ${CC}
+	echo LD:             ${LD}
+	echo CXX:            ${CXX}
+	echo AR:			 ${AR}
+	echo AS:			 ${AS}
+	echo NM:			 ${NM}
+	echo STRIP:			 ${STRIP}
+	echo RANLIB:		 ${RANLIB}
 
 	# Build minizip
-	${TOPDIR}/build-droid/build-minizip.sh > "${LOGPATH}-minizip.log"
+	#${TOPDIR}/build-droid/build-minizip.sh > "${LOGPATH}-minizip.log"
 
 	# Build icu
-	${TOPDIR}/build-droid/build-icu.sh > "${LOGPATH}-icu.log"
+	#${TOPDIR}/build-droid/build-icu.sh > "${LOGPATH}-icu.log"
 
 	# Build c-ares
-	${TOPDIR}/build-droid/build-cares.sh > "${LOGPATH}-cares.log"
+	#${TOPDIR}/build-droid/build-cares.sh > "${LOGPATH}-cares.log"
 
 	# Build bzip2
 	${TOPDIR}/build-droid/build-bzip2.sh > "${LOGPATH}-bzip2.log"
 
 	# Build libidn (before curl and gsasl)
-	${TOPDIR}/build-droid/build-libidn.sh > "${LOGPATH}-libidn.log"
+	#${TOPDIR}/build-droid/build-libidn.sh > "${LOGPATH}-libidn.log"
 
 	# Build libgpg-error
-	${TOPDIR}/build-droid/build-libgpg-error.sh > "${LOGPATH}-libgpg-error.log"
+	#${TOPDIR}/build-droid/build-libgpg-error.sh > "${LOGPATH}-libgpg-error.log"
 
 	# Build libgcrypt
-	${TOPDIR}/build-droid/build-libgcrypt.sh > "${LOGPATH}-libgcrypt.log"
+	#${TOPDIR}/build-droid/build-libgcrypt.sh > "${LOGPATH}-libgcrypt.log"
 
 	# Build GnuPG
-	${TOPDIR}/build-droid/build-GnuPG.sh > "${LOGPATH}-GnuPG.log"
+	#${TOPDIR}/build-droid/build-GnuPG.sh > "${LOGPATH}-GnuPG.log"
 
 	# Build OpenSSL
 	${TOPDIR}/build-droid/build-openssl.sh > "${LOGPATH}-OpenSSL.log"
 
 	# Build libssh2
-	${TOPDIR}/build-droid/build-libssh2.sh > "${LOGPATH}-libssh2.log"
+	#${TOPDIR}/build-droid/build-libssh2.sh > "${LOGPATH}-libssh2.log"
 
 	# Build cURL
 	${TOPDIR}/build-droid/build-cURL.sh > "${LOGPATH}-cURL.log"
 
 	# Build libgsasl
-	${TOPDIR}/build-droid/build-libgsasl.sh > "${LOGPATH}-libgsasl.log"
+	#${TOPDIR}/build-droid/build-libgsasl.sh > "${LOGPATH}-libgsasl.log"
 
 	# Build BOOST
 	${TOPDIR}/build-droid/build-boost.sh > "${LOGPATH}-boost.log"
 
 	# Build tinyxml
-	${TOPDIR}/build-droid/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
+	#${TOPDIR}/build-droid/build-tinyxml.sh > "${LOGPATH}-tinyxml.log"
 
 	# Build expat
-	${TOPDIR}/build-droid/build-expat.sh > "${LOGPATH}-expat.log"
+	#${TOPDIR}/build-droid/build-expat.sh > "${LOGPATH}-expat.log"
 
 	# Build yajl
-	${TOPDIR}/build-droid/build-yajl.sh > "${LOGPATH}-yajl.log"
+	#${TOPDIR}/build-droid/build-yajl.sh > "${LOGPATH}-yajl.log"
 
 	# Build SQLCipher
-	${TOPDIR}/build-droid/build-sqlcipher.sh > "${LOGPATH}-sqlcipher.log"
+	#${TOPDIR}/build-droid/build-sqlcipher.sh > "${LOGPATH}-sqlcipher.log"
 
 	# Build SOCI
-	${TOPDIR}/build-droid/build-soci.sh > "${LOGPATH}-soci.log"
+	#${TOPDIR}/build-droid/build-soci.sh > "${LOGPATH}-soci.log"
 
 	# Build PION
-	${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
+	#${TOPDIR}/build-droid/build-pion.sh > "${LOGPATH}-pion.log"
 
 	# Remove junk
-	rm -rf "${ROOTDIR}/bin"
-	rm -rf "${ROOTDIR}/certs"
-	rm -rf "${ROOTDIR}/libexec"
-	rm -rf "${ROOTDIR}/man"
-	rm -rf "${ROOTDIR}/misc"
-	rm -rf "${ROOTDIR}/private"
-	rm -rf "${ROOTDIR}/sbin"
-	rm -rf "${ROOTDIR}/share"
-	rm -rf "${ROOTDIR}/openssl.cnf"
+	rm -rf "${ROOTDIR}/bin" || true
+	rm -rf "${ROOTDIR}/certs" || true
+	rm -rf "${ROOTDIR}/libexec" || true
+	rm -rf "${ROOTDIR}/man" || true
+	rm -rf "${ROOTDIR}/misc" || true
+	rm -rf "${ROOTDIR}/private" || true
+	rm -rf "${ROOTDIR}/sbin" || true
+	rm -rf "${ROOTDIR}/share" || true
+	rm -rf "${ROOTDIR}/openssl.cnf" || true
 
 done
 
-mkdir -p ${BINDIR}/include
-cp -r ${TMPDIR}/build/droid/arm-linux-androideabi/include ${BINDIR}/
 
-#mkdir -p ${BINDIR}/lib/x86
-mkdir -p ${BINDIR}/lib/${ARM_TARGET}
 
-#cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/x86
-#cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.la ${BINDIR}/lib/x86
+for TARGET in ${TARGETS}
+do
+	mkdir -p ${BINDIR}/include
+	cp -r ${TMPDIR}/build/droid/${TARGET}/include ${BINDIR}/
 
-#(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
-#(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
+	#mkdir -p ${BINDIR}/lib/x86
+	mkdir -p ${BINDIR}/lib/${TARGET}
 
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.a ${BINDIR}/lib/${ARM_TARGET}
-cp ${TMPDIR}/build/droid/arm-linux-androideabi/lib/*.la ${BINDIR}/lib/${ARM_TARGET}
+	#cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.a ${BINDIR}/lib/x86
+	#cp ${TMPDIR}/build/droid/i686-android-linux/lib/*.la ${BINDIR}/lib/x86
 
-(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
-#(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
+	#(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
+	#(cd ${TMPDIR}/build/droid/i686-android-linux/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/x86 && tar xfB - )
+
+	cp ${TMPDIR}/build/droid/${TARGET}/lib/*.a ${BINDIR}/lib/${TARGET}
+	cp ${TMPDIR}/build/droid/${TARGET}/lib/*.la ${BINDIR}/lib/${TARGET} || true
+
+	(cd ${TMPDIR}/build/droid/${TARGET}/lib && tar cf - *.so ) | ( cd ${BINDIR}/lib/${TARGET} && tar xfB - )
+	#(cd ${TMPDIR}/build/droid/arm-linux-androideabi/lib && tar cf - *.so.* ) | ( cd ${BINDIR}/lib/${ARM_TARGET} && tar xfB - )
+
+done
+
 
 echo "**** Android c/c++ open source build completed ****"
 
